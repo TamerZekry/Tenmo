@@ -7,7 +7,21 @@ namespace TenmoServer.Helpers
 {
     public class TransferChecker
     {
-        //GONNA VERIFY TRANSACTIONS HERE oops caps
-        //public static bool 
+        public static bool CheckIfCanAfford()
+        {
+            throw new NotImplementedException();
+        }
+        public static bool CheckIfNegative()
+        {
+            throw new NotImplementedException();
+        }
+        public static bool CheckIfValidSender()
+        {
+            throw new NotImplementedException();
+        }
+        public static bool CheckIfValidReciever()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

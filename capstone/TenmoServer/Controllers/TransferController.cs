@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TenmoServer.Models;
 using TenmoServer.DAO;
+using TenmoServer.Helpers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -41,7 +42,21 @@ namespace TenmoServer.Controllers
 
         // TODO: POST Transfer(int targetID, int senderID, decimal amountToSend)
         // POST <TransferController>
-        [HttpPost("")]
+        [HttpPost("transfer/")]
+        public void TryTransfer([FromBody] int targetID, [FromBody] int senderID, [FromBody] decimal amountToSend)
+        {
+            if (CanTransfer(targetID, senderID, amountToSend)) {
+                Transfer(targetID, senderID, amountToSend);
+            }
+        }
+
+        private bool CanTransfer(int targetID, int senderID, decimal amountToSend)
+        {
+            if (!TransferChecker.CheckIfCanAfford() || !TransferChecker.CheckIfNegative() || !TransferChecker.CheckIfValidReciever() || !TransferChecker.CheckIfValidSender())
+                return false;
+            return true;
+        }
+
         public void Transfer([FromBody] int targetID, [FromBody] int senderID, [FromBody] decimal amountToSend)
         {
             transferDao.SendTransfer(targetID, senderID, amountToSend);
