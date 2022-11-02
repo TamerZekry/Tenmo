@@ -1,4 +1,4 @@
-﻿using RestSharp;
+using RestSharp;
 using System.Collections.Generic;
 using TenmoClient.Models;
 
@@ -25,8 +25,6 @@ namespace TenmoClient.Services
             //  8. I can't send a zero or negative amount.
 
         // TODO:  5. As an authenticated user of the system, I need to be able to see transfers I have sent or received.
-
-        // TODO: 6. As an authenticated user of the system, I need to be able to retrieve the details of any transfer based upon the transfer ID.
 
     }
 }
