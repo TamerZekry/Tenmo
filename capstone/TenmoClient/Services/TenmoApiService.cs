@@ -26,7 +26,5 @@ namespace TenmoClient.Services
 
         // TODO:  5. As an authenticated user of the system, I need to be able to see transfers I have sent or received.
 
-        // TODO: 6. As an authenticated user of the system, I need to be able to retrieve the details of any transfer based upon the transfer ID.
-
     }
 }
