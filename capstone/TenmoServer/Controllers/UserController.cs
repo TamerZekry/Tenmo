@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TenmoServer.DAO;
+using TenmoServer.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,24 +14,29 @@ namespace TenmoServer.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IUserDao _userDao;
 
-        // TODO: GET Specific user balance
-
-        // GET: /<UserController>
-        [HttpGet("{id}")]
-        public decimal GetUserBalance(int id)
+        public UserController(IUserDao userDao)
         {
-            return new decimal();
+            _userDao = userDao;
         }
+        //// TODO: GET Specific user balance
+
+        //// GET: /<UserController>
+        //[HttpGet("{id}")]
+        //public decimal GetUserBalance(int id)
+        //{
+        //    return new decimal();
+        //}
 
 
         // TODO: GET List of users
 
-        // GET /<UserController>/5
+        // Get All registered users
         [HttpGet("")]
-        public IEnumerable<string> Get()
+        public ActionResult<List<User>>  Get()
         {
-            return new List<string>() ;
+            return _userDao.GetUsers(); ;
         }
     }
 }
