@@ -16,8 +16,6 @@ namespace TenmoClient.Services
             IRestClient clint = TenmoApiService.client;
             RestRequest request = new RestRequest($"user/{id}");
             IRestResponse response = client.Get(request);
-            var sdfsd = response;
-
             return decimal.Parse(response.Content);
 
 
