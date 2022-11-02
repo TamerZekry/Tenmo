@@ -14,7 +14,14 @@ namespace TenmoServer.Controllers
     [ApiController]
     public class TransferController : ControllerBase
     {
-        ITransferDao transferDao = new TransferDao();
+        /*
+        private readonly ITransferDao _transferDao;
+
+        public TransferController( ITransferDao transferDao)
+        {
+            _transferDao = transferDao;
+        }
+       // ITransferDao transferDao = new TransferDao();
 
 
 
@@ -27,7 +34,7 @@ namespace TenmoServer.Controllers
         [HttpGet("{id}")]
         public IEnumerable<Transfer> GetTransfers(int userId)
         {
-            return transferDao.GetTransfersForUser(userId);
+            return _transferDao.GetTransfersForUser(userId);
         }
 
 
@@ -36,7 +43,7 @@ namespace TenmoServer.Controllers
         [HttpGet("{id}")]
         public Transfer Get(int id)
         {
-            return transferDao.GetTransferById(id);
+            return _transferDao.GetTransferById(id);
         }
 
         // TODO: POST Transfer(int targetID, int senderID, decimal amountToSend)
@@ -44,14 +51,14 @@ namespace TenmoServer.Controllers
         [HttpPost("")]
         public void Transfer([FromBody] int targetID, [FromBody] int senderID, [FromBody] decimal amountToSend)
         {
-            transferDao.SendTransfer(targetID, senderID, amountToSend);
+            _transferDao.SendTransfer(targetID, senderID, amountToSend);
         }
 
         // TODO: GET check if user can afford a transfer
         [HttpPost("")]
         public void CheckIfViableTransfer([FromBody] int targetID, [FromBody] int senderID, [FromBody] decimal amountToSend)
         {
-            transferDao.SendTransfer(targetID, senderID, amountToSend);
+            _transferDao.SendTransfer(targetID, senderID, amountToSend);
         }
 
 
@@ -65,5 +72,6 @@ namespace TenmoServer.Controllers
 
         // TODO: GET status of transfer
         // TODO: PUT approve or deny transfer
+        */
     }
 }
