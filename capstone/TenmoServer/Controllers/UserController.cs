@@ -19,23 +19,25 @@ namespace TenmoServer.Controllers
         public UserController(IUserDao userDao)
         {
             _userDao = userDao;
-
-
-            
         }
-        //// TODO: GET Specific user balance
 
-        //// GET: /<UserController>
+        /// <summary>
+        /// return the balance of a user given the user id   at endpoint  apiUrl/user/id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+     
+        
         [HttpGet("{id}")]
         public decimal GetUserBalance(int id)
         {
             return _userDao.GetUserBalanceById(id);
         }
-
-
-        // TODO: GET List of users
-
-        //Get All registered users
+        /// <summary>
+        /// return a List of users at endpoint  apiUrl/user
+        /// apiUrl = "https://localhost:44315/";
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("")]
         public ActionResult<List<User>>  Get()
         {

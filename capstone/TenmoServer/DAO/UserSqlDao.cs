@@ -119,7 +119,6 @@ namespace TenmoServer.DAO
                     SqlCommand cmd = new SqlCommand("SELECT * FROM tenmo_user ,account WHERE tenmo_user.user_id = account.user_id AND tenmo_user.user_id = @id;", conn);
                     cmd.Parameters.AddWithValue("@id", id);
                     
-                    
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     if (reader.Read())
@@ -136,9 +135,6 @@ namespace TenmoServer.DAO
 
         }
 
-
-
-
         private User GetUserFromReader(SqlDataReader reader)
         {
             User u = new User()
@@ -151,9 +147,6 @@ namespace TenmoServer.DAO
 
             return u;
         }
-
-
-
 
     }
 }
