@@ -7,8 +7,19 @@ namespace TenmoClient.Services
     public class TenmoApiService : AuthenticatedApiService
     {
         public readonly string ApiUrl;
-
+      
         public TenmoApiService(string apiUrl) : base(apiUrl) { }
+
+
+         public decimal  getBalanceById (int id)
+        {
+            IRestClient clint = TenmoApiService.client;
+            RestRequest request = new RestRequest($"user/{id}");
+            IRestResponse response = client.Get(request);
+            return decimal.Parse(response.Content);
+
+
+        }
 
 
         // Add methods to call api here...

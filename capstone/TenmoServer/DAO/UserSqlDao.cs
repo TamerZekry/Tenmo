@@ -107,6 +107,34 @@ namespace TenmoServer.DAO
             return GetUser(username);
         }
 
+        public decimal GetUserBalanceById(int id)
+        {
+            decimal _balance = 00;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM tenmo_user ,account WHERE tenmo_user.user_id = account.user_id AND tenmo_user.user_id = @id;", conn);
+                    cmd.Parameters.AddWithValue("@id", id);
+                    
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        _balance = Convert.ToDecimal(reader["balance"]);
+                    }
+                    return _balance;
+                }
+            }
+            catch (SqlException)
+            {
+                throw;
+            }
+
+        }
+
         private User GetUserFromReader(SqlDataReader reader)
         {
             User u = new User()
@@ -119,5 +147,6 @@ namespace TenmoServer.DAO
 
             return u;
         }
+
     }
 }
