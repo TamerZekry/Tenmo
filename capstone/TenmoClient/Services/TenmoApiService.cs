@@ -7,9 +7,30 @@ namespace TenmoClient.Services
     public class TenmoApiService : AuthenticatedApiService
     {
         public readonly string ApiUrl;
-
+      
         public TenmoApiService(string apiUrl) : base(apiUrl) { }
 
+         public decimal  getBalanceById (int id)
+        {
+            IRestClient clint = TenmoApiService.client;
+            RestRequest request = new RestRequest($"user/{id}");
+            IRestResponse response = client.Get(request);
+            return decimal.Parse(response.Content);
+
+
+        }
+        public List<Transfer> GetAllTransfersForUser()
+        {
+            RestRequest request = new RestRequest($"transfer/{UserId}");
+            IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
+
+            if(!response.IsSuccessful)
+            {
+                // request failed.
+            }
+
+            return response.Data;
+        }
 
         // Add methods to call api here...
         // TODO: 3. As an authenticated user of the system, I need to be able to see my Account Balance.

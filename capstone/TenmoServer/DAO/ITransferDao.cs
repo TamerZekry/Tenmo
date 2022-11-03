@@ -11,7 +11,9 @@ namespace TenmoServer.DAO
         public List<Transfer> GetTransfersForUser(int userId);
         public Transfer GetTransferById(int id);
         public List<Transfer> GetPendingTransfers(int userId);
-        public bool SendTransfer(int userId, int otherUserId, decimal amount);
-        public void RequestTransfer(int requestUserId, int otherUserId);
+        public void RequestTransfer(int requestUserId, int otherUserId, decimal amount, bool sending);
+        public bool CheckIfAccountExists(int accountId);
+        public Account getAccountById(int id);
+        public bool checkIfCanAfford(int id, Decimal amount);
     }
 }

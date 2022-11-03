@@ -73,12 +73,25 @@ namespace TenmoClient
 
             if (menuSelection == 1)
             {
-                // View your current balance
+                // View logged in user balance
+                console.Pause(tenmoApiService.getBalanceById(tenmoApiService.UserId).ToString("C"));
             }
 
             if (menuSelection == 2)
             {
                 // View your past transfers
+                var transfers = tenmoApiService.GetAllTransfersForUser();
+                Console.WriteLine($"Transfers Count: {transfers.Count}");
+                foreach(var transfer in transfers) // placeholder see README for desired result. (USE CASE: 5)
+                {
+                    Console.WriteLine($"Id: {transfer.Id}");
+                    Console.WriteLine($"Type: {transfer.Type}");
+                    Console.WriteLine($"From: {transfer.From}");
+                    Console.WriteLine($"To: {transfer.To}");
+                    Console.WriteLine($"Amount: {transfer.Amount}");
+                    Console.WriteLine($"Id: {transfer.Status}");
+                }
+                console.Pause();
             }
 
             if (menuSelection == 3)
