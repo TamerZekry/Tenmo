@@ -117,7 +117,11 @@ namespace TenmoClient
                     console.PrintError("You can't send negative money");
                     goto enterMoney;
                 }
-                 //call   transfer
+                //call   transfer
+
+
+
+                tenmoApiService.TransferPay(tenmoApiService.UserId, userIdtoSendMonyTo, AmountOfMoneytoBeSend);
 
 
                 console.Pause();
