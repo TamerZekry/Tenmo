@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TenmoClient.Helpers;
 using TenmoClient.Models;
 using TenmoClient.Services;
@@ -80,19 +81,32 @@ namespace TenmoClient
 
             if (menuSelection == 2)
             {
+                var transferList = tenmoApiService.GetAllTransfersForUser();
                 // View your past transfers
-                var transfers = tenmoApiService.GetAllTransfersForUser();
-                Console.WriteLine($"Transfers Count: {transfers.Count}");
-                foreach(var transfer in transfers) // placeholder see README for desired result. (USE CASE: 5)
+                console.PrintViewTransfersMenu(
+                    transfers: transferList,
+                    accountId: 0);// tenmoApiService.getAccountByUser(tenmoApiService.UserId));
+
+                Transfer selectedTransfer = null;
+
+                do
                 {
-                    Console.WriteLine($"Id: {transfer.Id}");
-                    Console.WriteLine($"Type: {transfer.Type}");
-                    Console.WriteLine($"From: {transfer.From}");
-                    Console.WriteLine($"To: {transfer.To}");
-                    Console.WriteLine($"Amount: {transfer.Amount}");
-                    Console.WriteLine($"Id: {transfer.Status}");
+                    int selectedId = console.PromptForInteger("Please enter transfer ID to view details (0 to cancel): ");
+                    if (selectedId == 0)
+                    {
+                        break;
+                    }
+
+                    selectedTransfer = transferList.Where((t => t.Id == selectedId)).FirstOrDefault();
+                    if (selectedTransfer == null)
+                    {
+                        console.PrintError("Please select a valid transfer Id");
+                    }
                 }
-                console.Pause();
+                while (selectedTransfer == null);
+
+                //View Transfer details.
+                console.PrintTransferDetails(selectedTransfer);
             }
 
             if (menuSelection == 3)

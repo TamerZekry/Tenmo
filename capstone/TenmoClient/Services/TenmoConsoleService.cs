@@ -34,6 +34,35 @@ namespace TenmoClient.Services
             Console.WriteLine("0: Exit");
             Console.WriteLine("---------");
         }
+
+        public void PrintViewTransfersMenu(List<Transfer> transfers, int accountId)
+        {
+            string toUsername = string.Empty;
+            string fromUsername = string.Empty;
+            string otherUsername = string.Empty;
+
+            Console.WriteLine("Transfers");
+            Console.WriteLine("-------------------------------------------");
+            Console.WriteLine("Id          From/To                 Amount");
+            Console.WriteLine("-------------------------------------------");
+            foreach (var transfer in transfers)
+            {
+                string type = "";
+                if(transfer.To == accountId)
+                {
+                    otherUsername = fromUsername;
+                    type = "From";
+                }
+                else
+                {
+                    otherUsername = toUsername;
+                    type = "To";
+                }
+                Console.WriteLine($"{transfer.Id} {type}: { otherUsername}");
+            }
+            Console.WriteLine("--------");
+        }
+
         public LoginUser PromptForLogin()
         {
             string username = PromptForString("User name");
@@ -49,6 +78,19 @@ namespace TenmoClient.Services
                 Password = password
             };
             return loginUser;
+        }
+
+        internal void PrintTransferDetails(Transfer transfer)
+        {
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("Transfer");
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine($"Id: {transfer.Id}");
+            Console.WriteLine($"From: {transfer.From}");//wrong should be username.
+            Console.WriteLine($"To: {transfer.From}");//wrong should be username.
+            Console.WriteLine($"Type: {transfer.Type}");
+            Console.WriteLine($"Status: {transfer.Status}");
+            Console.WriteLine($"Amount: {transfer.Amount}");
         }
 
         // Add application-specific UI methods here...

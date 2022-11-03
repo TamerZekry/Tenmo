@@ -14,7 +14,7 @@ namespace TenmoClient.Services
          public decimal  getBalanceById (int id)
         {
             IRestClient clint = TenmoApiService.client;
-            RestRequest request = new RestRequest($"user/{id}");
+            RestRequest request = new RestRequest($"balance/{id}");
          //   request.AddObject(obj)
             IRestResponse response = client.Get(request);
             return decimal.Parse(response.Content);
