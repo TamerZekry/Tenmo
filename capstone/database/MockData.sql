@@ -12,7 +12,7 @@ VALUES
 (1003, 1000),
 (1004, 1000);
 
-INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (typeId,statusId, accountFrom, accountTo)
+INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount)
 VALUES
 (2, 2, 2002, 2001, 999),
 (2, 2, 2001, 2002, 999),
@@ -73,3 +73,12 @@ JOIN tenmo_user ON tenmo_user.user_id = account.account_id
 
 ROLLBACK;
 SELECT * FROM transfer;
+
+INSERT INTO transfer (transfer_type, transfer_status_id, account_from, account_to, amount)
+VALUES
+(
+2,
+2,
+(SELECT tenmo_user.user_id FROM tenmo_user where tenmo_user.user_id = 1001),
+(SELECT tenmo_user.user_id FROM tenmo_user where tenmo_user.user_id = 1002)
+)

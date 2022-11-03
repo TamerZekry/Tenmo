@@ -23,7 +23,6 @@ namespace TenmoClient.Services
         {
             IRestClient clint = TenmoApiService.client;
             RestRequest request = new RestRequest($"balance/{id}");
-         //   request.AddObject(obj)
             IRestResponse response = client.Get(request);
             return decimal.Parse(response.Content);
 
@@ -31,13 +30,8 @@ namespace TenmoClient.Services
         }
         public List<Transfer> GetAllTransfersForUser()
         {
-            RestRequest request = new RestRequest($"transfer/{UserId}");
+            RestRequest request = new RestRequest($"transfer/user/{UserId}");
             IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
-
-            if(!response.IsSuccessful)
-            {
-                // request failed.
-            }
 
             return response.Data;
         }
@@ -65,7 +59,7 @@ namespace TenmoClient.Services
         {
             //int senderId, int targetId, int amount
             RestRequest request = new RestRequest($"transfer/pay");
-            request.AddObject( new { senderId = senderId, taregetId = targetId, amount = amount });
+            request.AddJsonBody( new { senderId = senderId, taregetId = targetId, amount = amount });
             IRestResponse  response = client.Post(request);
             var ppp = "ddfdf";
             if (!response.IsSuccessful)

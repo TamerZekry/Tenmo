@@ -85,7 +85,7 @@ namespace TenmoClient
                 // View your past transfers
                 console.PrintViewTransfersMenu(
                     transfers: transferList,
-                    accountId: 0);// tenmoApiService.getAccountByUser(tenmoApiService.UserId));
+                    accountId: tenmoApiService.GetAccountById(tenmoApiService.UserId));
 
                 Transfer selectedTransfer = null;
 

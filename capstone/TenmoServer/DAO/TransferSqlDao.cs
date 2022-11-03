@@ -227,7 +227,7 @@ namespace TenmoServer.DAO
                 SqlCommand cmd1 = new SqlCommand
                     ("BEGIN TRANSACTION;" +
                     "UPDATE account SET balance = @balanceRecieve WHERE account_id = @recieversId;" +
-                    "UPDATE account SET balance = @balanceSend WHERE account_id = @sendersId;");
+                    "UPDATE account SET balance = @balanceSend WHERE account_id = @sendersId;", conn);
              
                 SqlCommand commit = new SqlCommand("COMMIT;", conn);
 
