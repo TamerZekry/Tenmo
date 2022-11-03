@@ -148,5 +148,36 @@ namespace TenmoServer.DAO
             return u;
         }
 
+
+
+        public int GetAccountId(int UserId)
+        {
+            //SELECT account.account_id,tenmo_user.user_id             FROM account, tenmo_user WHERE account.user_id = tenmo_user.user_id AND tenmo_user.user_id = 1001
+
+            int account = 0;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(
+                        "SELECT account.account_id,tenmo_user.user_id FROM account, tenmo_user WHERE account.user_id = tenmo_user.user_id AND tenmo_user.user_id = 1001", conn);
+                    cmd.Parameters.AddWithValue("@id", UserId);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        account = Convert.ToInt32(reader["account_id"]);
+                    }
+                    return account;
+                }
+            }
+            catch (SqlException)
+            {
+                throw;
+            }
+
+        }
     }
-}
+    }
+
