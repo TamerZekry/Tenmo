@@ -20,14 +20,19 @@ namespace TenmoServer.Controllers
         {
             _userDao = userDao;
         }
-        [HttpGet("balance/{id}")]
-        public decimal GetBalanceFromUser(int id)
-        {
-            //Use bottom after merging with updated DAO branch
-            //return _userDao.GetUserBalance(id);
+
+        /// <summary>
+        /// return the balance of a user given the user id   at endpoint  apiUrl/user/id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+     
         
-            return _userDao.GetUserBalanceById(id);
-        }
+        //[HttpGet("{balance/{id}}")]
+        //public decimal GetUserBalance(int id)
+        //{
+        //    return _userDao.GetUserBalanceById(id);
+        //}
         /// <summary>
         /// return a List of users at endpoint  apiUrl/user
         /// apiUrl = "https://localhost:44315/";
