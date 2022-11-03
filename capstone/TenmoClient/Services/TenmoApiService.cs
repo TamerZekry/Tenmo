@@ -1,6 +1,8 @@
 using RestSharp;
+using ShredClasses;
 using System.Collections.Generic;
 using System.Data.Common;
+using TenmoClient.Helpers;
 using TenmoClient.Models;
 
 
@@ -32,7 +34,7 @@ namespace TenmoClient.Services
         }
         public List<Transfer> GetAllTransfersForUser()
         {
-            RestRequest request = new RestRequest($"transfer/{UserId}");
+            RestRequest request = new RestRequest($"transfer/user/{UserId}");
             IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
 
             if(!response.IsSuccessful)
@@ -62,18 +64,39 @@ namespace TenmoClient.Services
         }
 
 
+        //public void TransferPay(int senderId, int targetId, decimal amount)
+        //{
+        //    //int senderId, int targetId, int amount
+        //    RestRequest request = new RestRequest($"transfer/pay");
+        //    request.AddObject( new { senderId = senderId, taregetId = targetId, amount = amount });
+        //    IRestResponse  response = client.Post(request);
+        //    var ppp = "ddfdf";
+        //    if (!response.IsSuccessful)
+        //    {
+        //        // request failed.
+        //    }
+        //}
+
+
         public void TransferPay(int senderId, int targetId, decimal amount)
         {
             //int senderId, int targetId, int amount
-            RestRequest request = new RestRequest($"transfer/pay");
-            request.AddObject( new { senderId = senderId, taregetId = targetId, amount = amount });
-            IRestResponse  response = client.Post(request);
-            var ppp = "ddfdf";
+            RestRequest request = new RestRequest($"transfer/SendMoney");
+
+
+
+            request.AddJsonBody(new transfere_request(senderId,  targetId,  amount));
+            request.AddHeader("Content-Type", "application/json");
+
+            IRestResponse response = client.Post(request);
+           
             if (!response.IsSuccessful)
             {
                 // request failed.
             }
         }
+
+
 
 
 

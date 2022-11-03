@@ -9,11 +9,14 @@ namespace TenmoServer.DAO
 {
     public class TransferSqlDao : ITransferDao
     {
+         
         private readonly string connectionString;
+        private readonly IUserDao _userDao;
 
         public TransferSqlDao(string connString)
         {
             connectionString = connString;
+              _userDao = new UserSqlDao(connectionString);
         }
 
         public List<Transfer> GetTransfersForUser(int userId)
@@ -252,8 +255,13 @@ namespace TenmoServer.DAO
             transfer.Id = Convert.ToInt32(reader["transfer_id"]);
             transfer.From = Convert.ToInt32(reader["account_from"]);
             transfer.To = Convert.ToInt32(reader["account_to"]);
-            transfer.Type = Convert.ToString(reader["transfer_type_desc"]);
-            transfer.Status = Convert.ToString(reader["transfer_status_desc"]);
+            // int trantypeInt = Convert.ToInt32(reader["transfer_type_desc"])
+
+
+            //   transfer.Type = Convert.ToString(reader["transfer_type_desc"]);
+            transfer.Status = "Approved";
+            // transfer.Status = Convert.ToString(reader["transfer_status_desc"]);
+            transfer.Type = "Send";
             transfer.Amount = Convert.ToDecimal(reader["amount"]);
             return transfer;
         }
@@ -470,20 +478,26 @@ namespace TenmoServer.DAO
 
         public Transfer SendTransfer(int fromId, int toId, decimal amount)
         {
-            Account sender = CreateAccountFromId(fromId);
-            Account reciever = CreateAccountFromId(toId);
-            Transfer transfer = CreateTransferFromValues("Send", amount, sender, reciever);
+
+
+
+
+            int sender = _userDao.GetAccountId(1001);
+            int reciever = _userDao.GetAccountId(1002);
+           // Transfer transfer = CreateTransferFromValues("Send", amount, sender, reciever);
             using (SqlConnection accountConnection = new SqlConnection(connectionString))
             {
-                SqlCommand cmd = CreateTransferSql(sender, reciever, transfer);
-                SqlDataReader reader = cmd.ExecuteReader();
-                if (reader.Read())
-                {
-                    transfer = CreateTransferFromReader(reader);
-                }
+                accountConnection.Open();
+              //  SqlCommand cmd = CreateTransferSql(sender, reciever, transfer);
+              //  cmd.Connection = accountConnection;
+              //  SqlDataReader reader = cmd.ExecuteReader();
+                //if (reader.Read())
+                //{
+                //    transfer = CreateTransferFromReader(reader);
+                //}
 
             }
-            return transfer;
+            return null; // transfer;
         }
 
         public Transfer RequestTransfer(int fromId, int toId, decimal amount)
@@ -528,12 +542,13 @@ namespace TenmoServer.DAO
 
             using (SqlConnection accountConnection = new SqlConnection(connectionString))
             {
+                accountConnection.Open();
                 SqlCommand cmd = new SqlCommand(
                 "SELECT account.account_id, account.user_id, account.balance FROM account " +
                 "JOIN tenmo_user ON account.user_id = tenmo_user.user_id " +
-                "WHERE user_id = @id;");
+                "WHERE account.user_id = @id;", accountConnection);
                 cmd.Parameters.AddWithValue("@id", id);
-                cmd.Connection = accountConnection;
+                
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.Read())
@@ -553,7 +568,7 @@ namespace TenmoServer.DAO
                 sqlString = "UPDATE account SET balance = @balanceRecieve WHERE account_id = @recieversId; " +
                             "UPDATE account SET balance = @balanceSend WHERE account_id = @sendersId; ";
             }
-            sqlString += "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) OUTPUT INSERTED.* VALUES (@typeId, @statusId, @accountFrom, @accountTo) ";
+            sqlString += "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) OUTPUT INSERTED.* VALUES (@typeId, @statusId, @accountFrom, @accountTo, @amount) ";
             SqlCommand cmd = new SqlCommand
                 (
                 "BEGIN TRANSACTION; "+
@@ -563,35 +578,36 @@ namespace TenmoServer.DAO
             cmd.Parameters.AddWithValue("@balanceRecieve", reciever.balance + transfer.Amount);
             cmd.Parameters.AddWithValue("@recieversId", reciever.accoundId);
             cmd.Parameters.AddWithValue("@balanceSend", sender.balance - transfer.Amount);
-            cmd.Parameters.AddWithValue("@recieversId", sender.accoundId);
+            cmd.Parameters.AddWithValue("@sendersId", sender.accoundId);
             cmd.Parameters.AddWithValue("@typeId", transfer.Type);
             cmd.Parameters.AddWithValue("@statusId", transferType);
             cmd.Parameters.AddWithValue("@accountFrom", sender.accoundId);
             cmd.Parameters.AddWithValue("@accountTo", reciever.accoundId);
+            cmd.Parameters.AddWithValue("@amount", transfer.Amount);
 
             return cmd;
         }
        
 
-        private Transfer CreateTransferFromReader(SqlDataReader reader)
-        {
-            Transfer transfer = new Transfer();
-            transfer.Id = Convert.ToInt32(reader["transfer_id"]);
-            transfer.From = Convert.ToInt32(reader["account_from"]);
-            transfer.To = Convert.ToInt32(reader["account_to"]);
-            transfer.Type = Convert.ToString(reader["transfer_type_desc"]);
-            transfer.Status = Convert.ToString(reader["transfer_status_desc"]);
-            transfer.Amount = Convert.ToDecimal(reader["amount"]);
-            return transfer;
-        }
-        private Account CreateAccountFromReader(SqlDataReader reader)
-        {
-            Account account = new Account();
-            account.accoundId = Convert.ToInt32(reader["account_id"]);
-            account.userId = Convert.ToInt32(reader["user_id"]);
-            account.balance = Convert.ToDecimal(reader["balance"]);
-            return account;
-        }
+        //private Transfer CreateTransferFromReader(SqlDataReader reader)
+        //{
+        //    Transfer transfer = new Transfer();
+        //    transfer.Id = Convert.ToInt32(reader["transfer_id"]);
+        //    transfer.From = Convert.ToInt32(reader["account_from"]);
+        //    transfer.To = Convert.ToInt32(reader["account_to"]);
+        //    transfer.Type = Convert.ToString(reader["transfer_type_desc"]);
+        //    transfer.Status = Convert.ToString(reader["transfer_status_desc"]);
+        //    transfer.Amount = Convert.ToDecimal(reader["amount"]);
+        //    return transfer;
+        //}
+        //private Account CreateAccountFromReader(SqlDataReader reader)
+        //{
+        //    Account account = new Account();
+        //    account.accoundId = Convert.ToInt32(reader["account_id"]);
+        //    account.userId = Convert.ToInt32(reader["user_id"]);
+        //    account.balance = Convert.ToDecimal(reader["balance"]);
+        //    return account;
+        //}
 
     }
 }
