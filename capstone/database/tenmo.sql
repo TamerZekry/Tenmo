@@ -65,3 +65,12 @@ INSERT INTO transfer_status (transfer_status_desc) VALUES ('Rejected');
 
 INSERT INTO transfer_type (transfer_type_desc) VALUES ('Request');
 INSERT INTO transfer_type (transfer_type_desc) VALUES ('Send');
+SELECT * FROM account;
+SELECT * FROM tenmo_user;
+SELECT * FROM transfer;
+SELECT * FROM transfer_status;
+SELECT * FROM transfer_type;
+SELECT * FROM transfer
+JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id
+JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id
+WHERE account_to = 1 AND transfer.transfer_status_id = 1;
