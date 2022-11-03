@@ -15,6 +15,8 @@ namespace TenmoServer.DAO
         {
             connectionString = connString;
         }
+
+
         public List<Transfer> GetPendingTransfers(int userId)
         {
             List<Transfer> transferList = new List<Transfer>();
@@ -23,18 +25,19 @@ namespace TenmoServer.DAO
             {
                 transferConnection.Open();
 
-                SqlCommand cmd = new SqlCommand("SELECT * FROM transfer" +
-                " JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id" +
-                "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id" +
-                " WHERE account_to = @accountTo AND transfer.transfer_status_id = 1;");
+                SqlCommand cmd = new SqlCommand("SELECT * FROM transfer " +
+                "JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id " +
+                "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id " +
+                "JOIN account ON transfer.account_to = account.account_id " +
+                "JOIN tenmo_user ON tenmo_user.user_id = account.account_id " +
+                "WHERE user_id = @accountTo AND transfer.transfer_status_id = 1;");
                 cmd.Parameters.AddWithValue("@accountTo", userId);
                 cmd.Connection = transferConnection;
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    Transfer transfer = null;
-                    transfer = CreateTransferFromReader(reader);
+                    Transfer transfer = CreateTransferFromReader(reader);
                     transferList.Add(transfer);
                 }
             }
@@ -82,7 +85,7 @@ namespace TenmoServer.DAO
                 " JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id" +
                 " WHERE account_to = @userId OR account_from = @userId");
                 */
-                SqlCommand cmd = new SqlCommand(//transfer_id, account_from, account_to, transfer_type_desc, transfer_status_desc, amount
+                SqlCommand cmd = new SqlCommand(
                     "SELECT * FROM transfer " +
                     "JOIN account ON account.user_id = @userId " +
                     "JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id " +
@@ -104,59 +107,76 @@ namespace TenmoServer.DAO
             return transferList;
         }
 
-        public void RequestTransfer(int requestUserId, int otherUserId, decimal amount, bool sending)
+        public Transfer RequestTransfer(int requestUserId, int otherUserId, decimal amount, bool sending)
         {
             decimal sendersBalance;
             decimal recieversBalance;
+            Account sendersAccount = new Account();
+            Account recieversAccount = new Account();
             int senderId;
             int recieverId;
+            string insertTransfer;
+            SqlCommand insertCmd;
+
+
             if (sending == true)
             {
                 senderId = requestUserId;
-                recieverId = otherUserId;
-                Account account = null;
+                recieverId = otherUserId;                
                 using (SqlConnection accountConnection = new SqlConnection(connectionString))
                 {
                     accountConnection.Open();
 
                     SqlCommand cmd = new SqlCommand("SELECT * FROM account" +
-                    " WHERE account_id = @id;");
+                    " JOIN tenmo_user ON account.user_id = tenmo_user.user_id" +
+                    " WHERE user_id = @id;");
                     cmd.Parameters.AddWithValue("@id", requestUserId);
                     cmd.Connection = accountConnection;
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     if (reader.Read())
                     {
-                        account = CreateAccountFromReader(reader);
+                        sendersAccount = CreateAccountFromReader(reader);
                     }
 
-                    sendersBalance = account.balance; //sendersBalance is person sending money
+                    sendersBalance = sendersAccount.balance; //sendersBalance is person sending money
 
                     SqlCommand cmd1 = new SqlCommand("SELECT * FROM account" +
-                    " WHERE account_id = @id;");
+                    " JOIN tenmo_user ON account.user_id = tenmo_user.user_id" +
+                    " WHERE user_id = @id;");
                     cmd1.Parameters.AddWithValue("@id", otherUserId);
                     cmd1.Connection = accountConnection;
                     SqlDataReader reader1 = cmd.ExecuteReader();
 
                     if (reader1.Read())
                     {
-                        account = CreateAccountFromReader(reader);
+                        recieversAccount = CreateAccountFromReader(reader);
                     }
 
-                    recieversBalance = account.balance; //person recieveing money
+                    recieversBalance = recieversAccount.balance; //person recieveing money
+
+
                     Transfer transfer = new Transfer();
                     transfer.Amount = amount;
-                    transfer.From = senderId;
-                    transfer.To = recieverId;
+                    transfer.From = sendersAccount.accoundId;
+                    transfer.To = recieversAccount.accoundId;
                     transfer.Type = "Send";
                     transfer.Status = "Approved";
+
+                    insertTransfer = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) OUTPUT INSERTED.* VALUES (@typeId, @statusId, @accountFrom, @accountTo)";
+                                           
+
+                    insertCmd = new SqlCommand(insertTransfer, accountConnection);
+                    insertCmd.Parameters.AddWithValue("@typeId", 2);
+                    insertCmd.Parameters.AddWithValue("@statusId", 2);
+                    insertCmd.Parameters.AddWithValue("@accountFrom", sendersAccount.accoundId);
+                    insertCmd.Parameters.AddWithValue("@accointTo", recieversAccount.accoundId);
                 }
             }
             else
             {
                 senderId = otherUserId;
                 recieverId = requestUserId;
-                Account account = null;
                 using (SqlConnection accountConnection = new SqlConnection(connectionString))
                 {
                     accountConnection.Open();
@@ -169,10 +189,10 @@ namespace TenmoServer.DAO
 
                     if (reader.Read())
                     {
-                        account = CreateAccountFromReader(reader);
+                        recieversAccount = CreateAccountFromReader(reader);
                     }
 
-                    recieversBalance = account.balance;
+                    recieversBalance = recieversAccount.balance;
 
                     SqlCommand cmd1 = new SqlCommand("SELECT * FROM account" +
                     " WHERE account_id = @id;");
@@ -182,16 +202,25 @@ namespace TenmoServer.DAO
 
                     if (reader1.Read())
                     {
-                        account = CreateAccountFromReader(reader);
+                        sendersAccount = CreateAccountFromReader(reader);
                     }
 
-                    sendersBalance = account.balance;
+                    sendersBalance = sendersAccount.balance;
                     Transfer transfer = new Transfer();
                     transfer.Amount = amount;
                     transfer.From = senderId;
                     transfer.To = recieverId;
                     transfer.Type = "Request";
                     transfer.Status = "Pending";
+
+                    insertTransfer = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) OUTPUT INSERTED.* VALUES (@typeId, @statusId, @accountFrom, @accountTo)";
+
+
+                    insertCmd = new SqlCommand(insertTransfer, accountConnection);
+                    insertCmd.Parameters.AddWithValue("@typeId", 1);
+                    insertCmd.Parameters.AddWithValue("@statusId", 1);
+                    insertCmd.Parameters.AddWithValue("@accountFrom", sendersAccount.accoundId);
+                    insertCmd.Parameters.AddWithValue("@accointTo", recieversAccount.accoundId);
                 }
             }
             sendersBalance -= amount;
@@ -202,15 +231,24 @@ namespace TenmoServer.DAO
                 SqlCommand cmd1 = new SqlCommand
                     ("BEGIN TRANSACTION;" +
                     "UPDATE account SET balance = @balanceRecieve WHERE account_id = @recieversId;" +
-                    "UPDATE account SET balance = @balanceSend WHERE account_id = @sendersId;" +
-                    "COMMIT;", conn);
-                SqlCommand cmd2= new SqlCommand("", conn);
+                    "UPDATE account SET balance = @balanceSend WHERE account_id = @sendersId;");
+             
+                SqlCommand commit = new SqlCommand("COMMIT;", conn);
 
                 cmd1.Parameters.AddWithValue("@balanceRecieve", recieversBalance);
                 cmd1.Parameters.AddWithValue("@recieversId", recieverId);
                 cmd1.Parameters.AddWithValue("@balanceSend", sendersBalance);
                 cmd1.Parameters.AddWithValue("@sendersId", senderId);
-                int completed = cmd1.ExecuteNonQuery();
+                cmd1.ExecuteNonQuery();
+                SqlDataReader reader = insertCmd.ExecuteReader();
+                commit.ExecuteNonQuery();
+                Transfer transfer = null;
+                if (reader.Read())
+                {
+                    transfer = CreateTransferFromReader(reader);
+                }
+                return transfer;
+                
             }
         }
       
@@ -247,11 +285,12 @@ namespace TenmoServer.DAO
                 cmd.Parameters.AddWithValue("@id", accountId);
                 cmd.Connection = transferConnection;
                 SqlDataReader reader = cmd.ExecuteReader();
-
+                
                 if (reader.Read())
                 {
                     account = CreateAccountFromReader(reader);
                 }
+
             }
             if(account == null)
             {
