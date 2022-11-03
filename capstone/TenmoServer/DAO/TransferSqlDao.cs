@@ -127,7 +127,7 @@ namespace TenmoServer.DAO
                 {
                     accountConnection.Open();
 
-                    SqlCommand cmd = new SqlCommand("SELECT * FROM account" +
+                    SqlCommand cmd = new SqlCommand("SELECT account.account_id, account.user_id, account.balance FROM account" +
                     " JOIN tenmo_user ON account.user_id = tenmo_user.user_id" +
                     " WHERE user_id = @id;");
                     cmd.Parameters.AddWithValue("@id", requestUserId);
@@ -146,11 +146,11 @@ namespace TenmoServer.DAO
                     " WHERE user_id = @id;");
                     cmd1.Parameters.AddWithValue("@id", otherUserId);
                     cmd1.Connection = accountConnection;
-                    SqlDataReader reader1 = cmd.ExecuteReader();
+                    SqlDataReader reader1 = cmd1.ExecuteReader();
 
                     if (reader1.Read())
                     {
-                        recieversAccount = CreateAccountFromReader(reader);
+                        recieversAccount = CreateAccountFromReader(reader1);
                     }
 
                     recieversBalance = recieversAccount.balance; //person recieveing money
@@ -251,7 +251,105 @@ namespace TenmoServer.DAO
                 
             }
         }
-      
+
+
+
+        public Transfer SendTransfer(int fromId, int toId, decimal amount)
+        {
+            Account sender = CreateAccountFromId(fromId);
+            Account reciever = CreateAccountFromId(toId);
+            Transfer transfer = CreateTransferFromValues("Send", amount, sender, reciever);
+            SqlCommand cmd = CreateTransferSql(sender, reciever, transfer);
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                transfer = CreateTransferFromReader(reader);
+            }
+            return transfer;
+        }
+        
+        public Transfer requestTransfer(int fromId, int toId, decimal amount)
+        {
+            Account sender = CreateAccountFromId(fromId);
+            Account reciever = CreateAccountFromId(toId);
+            Transfer transfer = CreateTransferFromValues("Request", amount, sender, reciever);
+            SqlCommand cmd = CreateTransferSql(sender, reciever, transfer);
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                transfer = CreateTransferFromReader(reader);
+            }
+            return transfer;
+        }
+        public Transfer CreateTransferFromValues (string type, decimal amount, Account sender, Account reciever)
+        {
+            Transfer transfer = new Transfer();
+            transfer.Amount = amount;
+            transfer.From = sender.accoundId;
+            transfer.To = reciever.accoundId;
+            if (type.Equals("Send"))
+            {
+                transfer.Type = "Send";
+                transfer.Status = "Approved";
+
+            }
+            else
+            {
+                transfer.Type = "Request";
+                transfer.Status = "Pending";
+            }
+            return transfer;
+        }
+        public Account CreateAccountFromId(int id)
+        {
+            using (SqlConnection accountConnection = new SqlConnection(connectionString))
+            {
+                Account account = new Account();
+                SqlCommand cmd = new SqlCommand(
+                "SELECT account.account_id, account.user_id, account.balance FROM account " +
+                "JOIN tenmo_user ON account.user_id = tenmo_user.user_id " +
+                "WHERE user_id = @id;");
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Connection = accountConnection;
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    account = CreateAccountFromReader(reader);
+                }
+                return account;
+            }            
+        }
+        public SqlCommand CreateTransferSql(Account sender, Account reciever, Transfer transfer)
+        {
+            int transferType = 1;
+            string sqlString = "";
+            if (transfer.Type == "Send")
+            {
+                transferType = 2;
+                sqlString = "UPDATE account SET balance = @balanceRecieve WHERE account_id = @recieversId; " +
+                            "UPDATE account SET balance = @balanceSend WHERE account_id = @sendersId; ";
+            }
+            sqlString += "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) OUTPUT INSERTED.* VALUES (@typeId, @statusId, @accountFrom, @accountTo) ";
+            SqlCommand cmd = new SqlCommand
+                (
+                "BEGIN TRANSACTION; "+
+                sqlString+
+                "COMMIT;"
+                );
+            cmd.Parameters.AddWithValue("@balanceRecieve", reciever.balance + transfer.Amount);
+            cmd.Parameters.AddWithValue("@recieversId", reciever.accoundId);
+            cmd.Parameters.AddWithValue("@balanceSend", sender.balance - transfer.Amount);
+            cmd.Parameters.AddWithValue("@recieversId", sender.accoundId);
+            cmd.Parameters.AddWithValue("@typeId", transfer.Type);
+            cmd.Parameters.AddWithValue("@statusId", transferType);
+            cmd.Parameters.AddWithValue("@accountFrom", sender.accoundId);
+            cmd.Parameters.AddWithValue("@accountTo", reciever.accoundId);
+
+            return cmd;
+        }
+       
+
         private Transfer CreateTransferFromReader(SqlDataReader reader)
         {
             Transfer transfer = new Transfer();
