@@ -38,32 +38,32 @@ namespace TenmoServer.Controllers
             return _transferDao.GetTransfersForUser(userId);
         }
         [HttpGet("pending/{transferId}")]
-        public ActionResult<IEnumerable<Transfer>> GetPendingTransfers(int userId)
+        public ActionResult<IEnumerable<Transfer>> GetPendingTransfers(int transferId)
         {
-            throw new NotImplementedException();
+            return _transferDao.GetPendingTransfers(transferId);
         }
 
         [HttpGet("user/{userId}")]
         public ActionResult<IEnumerable<Transfer>> GetTransfersByUser(int userId)
         {
-            throw new NotImplementedException();
+            return _transferDao.GetTransfersForUser(userId);
         }
         [HttpGet("{transferId}")]
         public ActionResult<Transfer> GetTransferById(int transferId)
         {
-            throw new NotImplementedException();
             return _transferDao.GetTransferById(transferId);
         }
-        [HttpPost]
+        [HttpPost("request")]
 
-        public void PostTransferRequest(int senderId, int targetId, int amount)
+        public void PostTransferRequest(int senderId, int targetId, decimal amount)
         {
-            throw new NotImplementedException();
+            _transferDao.RequestTransfer(senderId, targetId, amount, false);
         }
+        [HttpPost("pay")]
 
         public void PostTransfer(int senderId, int targetId, int amount)
         {
-            throw new NotImplementedException();
+            _transferDao.RequestTransfer(senderId, targetId, amount, true);
         }
     }
 }
