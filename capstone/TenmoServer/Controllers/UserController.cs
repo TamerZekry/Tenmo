@@ -20,28 +20,24 @@ namespace TenmoServer.Controllers
         {
             _userDao = userDao;
         }
-        //// TODO: GET Specific user balance
-
-        // GET: /<UserController>
-        [HttpGet("{id}")]
+        [HttpGet("balance/{id}")]
         public decimal GetBalanceFromUser(int id)
         {
-            return (decimal)0.0;
+            throw new NotImplementedException();
+            //Use bottom after merging with updated DAO branch
+            //return _userDao.GetUserBalance(id);
         }
 
 
-        // TODO: GET List of users
-
-        // Get All registered users
         [HttpGet]
         public ActionResult<List<User>> GetUsers()
         {
-            return _userDao.GetUsers(); ;
+            return _userDao.GetUsers(); 
         }
-        [HttpGet]
-        public ActionResult<List<User>> GetUser(int userId)
+        [HttpGet("{id}")]
+        public ActionResult<User> GetUser(int id)
         {
-            throw new NotImplementedException();
+            return _userDao.GetUser(id.ToString());
         }
 
     }
