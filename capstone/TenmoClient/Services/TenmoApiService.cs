@@ -28,6 +28,7 @@ namespace TenmoClient.Services
             return decimal.Parse(response.Content);
 
 
+
         }
         public List<Transfer> GetAllTransfersForUser()
         {
