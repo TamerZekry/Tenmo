@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +41,13 @@ namespace TenmoServer.Controllers
         [HttpGet("")]
         public ActionResult<List<User>>  Get()
         {
-            return _userDao.GetUsers(); ;
+            return _userDao.GetUsers(); 
         }
+        [HttpGet("{id}")]
+        public ActionResult<User> GetUser(int id)
+        {
+            return _userDao.GetUser(id.ToString());
+        }
+
     }
 }

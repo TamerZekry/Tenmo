@@ -37,55 +37,33 @@ namespace TenmoServer.Controllers
             }
             return _transferDao.GetTransfersForUser(userId);
         }
-
-        /*
-        
-       // ITransferDao transferDao = new TransferDao();
-
-
-
-
-
-        // GET: <TransferController>/{id}
-
-
-        
-
-
-        // TODO: GET Transfer details by transaction ID
-        // GET <TransferController>/5
-        [HttpGet("{id}")]
-        public Transfer Get(int id)
+        [HttpGet("pending/{transferId}")]
+        public ActionResult<IEnumerable<Transfer>> GetPendingTransfers(int transferId)
         {
-            return _transferDao.GetTransferById(id);
+            return _transferDao.GetPendingTransfers(transferId);
         }
 
-        // TODO: POST Transfer(int targetID, int senderID, decimal amountToSend)
-        // POST <TransferController>
-        [HttpPost("")]
-        public void Transfer([FromBody] int targetID, [FromBody] int senderID, [FromBody] decimal amountToSend)
+        [HttpGet("user/{userId}")]
+        public ActionResult<IEnumerable<Transfer>> GetTransfersByUser(int userId)
         {
-            _transferDao.SendTransfer(targetID, senderID, amountToSend);
+            return _transferDao.GetTransfersForUser(userId);
         }
-
-        // TODO: GET check if user can afford a transfer
-        [HttpPost("")]
-        public void CheckIfViableTransfer([FromBody] int targetID, [FromBody] int senderID, [FromBody] decimal amountToSend)
+        [HttpGet("{transferId}")]
+        public ActionResult<Transfer> GetTransferById(int transferId)
         {
-            _transferDao.SendTransfer(targetID, senderID, amountToSend);
+            return _transferDao.GetTransferById(transferId);
         }
+        [HttpPost("request")]
 
-
-        // TODO: Put Decrease user balance by transfer amount
-        // PUT <TransferController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void PostTransferRequest(int senderId, int targetId, decimal amount)
         {
+            _transferDao.RequestTransfer(senderId, targetId, amount, false);
         }
+        [HttpPost("pay")]
 
-
-        // TODO: GET status of transfer
-        // TODO: PUT approve or deny transfer
-        */
+        public void PostTransfer(int senderId, int targetId, int amount)
+        {
+            _transferDao.RequestTransfer(senderId, targetId, amount, true);
+        }
     }
 }
