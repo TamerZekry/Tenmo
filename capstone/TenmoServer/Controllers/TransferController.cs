@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TenmoServer.Models;
 using TenmoServer.DAO;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,13 +15,31 @@ namespace TenmoServer.Controllers
     [ApiController]
     public class TransferController : ControllerBase
     {
-        /*
-        private readonly ITransferDao _transferDao;
 
-        public TransferController( ITransferDao transferDao)
+        private readonly ITransferDao _transferDao;
+        private readonly IUserDao _userDao;
+
+        public TransferController(ITransferDao transferDao, IUserDao userDao)
         {
             _transferDao = transferDao;
+            _userDao = userDao;
         }
+
+        // TODO: GET List of past transactions from user
+        [HttpGet("{userId}")]
+        [Authorize]
+        public ActionResult<List<Transfer>> GetTransfers(int userId)
+        {
+            var user =_userDao.GetUser(User.Identity.Name);
+            if(user == null || userId != user.UserId) 
+            {
+                return Forbid();
+            }
+            return _transferDao.GetTransfersForUser(userId);
+        }
+
+        /*
+        
        // ITransferDao transferDao = new TransferDao();
 
 
@@ -30,12 +49,7 @@ namespace TenmoServer.Controllers
         // GET: <TransferController>/{id}
 
 
-        // TODO: GET List of past transactions from user
-        [HttpGet("{id}")]
-        public IEnumerable<Transfer> GetTransfers(int userId)
-        {
-            return _transferDao.GetTransfersForUser(userId);
-        }
+        
 
 
         // TODO: GET Transfer details by transaction ID

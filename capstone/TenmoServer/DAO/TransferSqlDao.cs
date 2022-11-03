@@ -76,11 +76,20 @@ namespace TenmoServer.DAO
             {
                 transferConnection.Open();
 
+                /*
                 SqlCommand cmd = new SqlCommand("SELECT * FROM transfer" +
                 " JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id" +
-                "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id" +
+                " JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id" +
                 " WHERE account_to = @userId OR account_from = @userId");
-                cmd.Parameters.AddWithValue("@UserId", userId);
+                */
+                SqlCommand cmd = new SqlCommand(
+                    "SELECT transfer_id, account_from, account_to, transfer_type_desc, transfer_status_desc, amount FROM transfer " +
+                    "JOIN account ON account.user_id = @userId " +
+                    "JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id " +
+                    "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id " +
+                    "WHERE transfer.account_from = account.account_id OR transfer.account_to = account.account_id;");
+
+                cmd.Parameters.AddWithValue("@userId", userId);
                 cmd.Connection = transferConnection;
                 SqlDataReader reader = cmd.ExecuteReader();
 
@@ -121,7 +130,7 @@ namespace TenmoServer.DAO
                         account = CreateAccountFromReader(reader);
                     }
 
-                    sendersBalance = account.balance; //sendersBalance is person sending money
+                    sendersBalance = account.amount; //sendersBalance is person sending money
 
                     SqlCommand cmd1 = new SqlCommand("SELECT * FROM account" +
                     " WHERE account_id = @id;");
@@ -134,7 +143,7 @@ namespace TenmoServer.DAO
                         account = CreateAccountFromReader(reader);
                     }
 
-                    recieversBalance = account.balance; //person recieveing money
+                    recieversBalance = account.amount; //person recieveing money
                 }
             }
             else
@@ -157,7 +166,7 @@ namespace TenmoServer.DAO
                         account = CreateAccountFromReader(reader);
                     }
 
-                    recieversBalance = account.balance;
+                    recieversBalance = account.amount;
 
                     SqlCommand cmd1 = new SqlCommand("SELECT * FROM account" +
                     " WHERE account_id = @id;");
@@ -170,7 +179,7 @@ namespace TenmoServer.DAO
                         account = CreateAccountFromReader(reader);
                     }
 
-                    sendersBalance = account.balance;
+                    sendersBalance = account.amount;
                 }
             }
             sendersBalance -= amount;
@@ -197,7 +206,7 @@ namespace TenmoServer.DAO
             transfer.Id = Convert.ToInt32(reader["transfer_id"]);
             transfer.From = Convert.ToString(reader["account_from"]);
             transfer.To = Convert.ToString(reader["account_to"]);
-            transfer.Type = Convert.ToString(reader["transfer_type"]);
+            transfer.Type = Convert.ToString(reader["transfer_type_desc"]);
             transfer.Status = Convert.ToString(reader["transfer_status_desc"]);
             transfer.Amount = Convert.ToDecimal(reader["amount"]);
             return transfer;
@@ -207,7 +216,7 @@ namespace TenmoServer.DAO
             Account account = new Account();
             account.accoundId = Convert.ToInt32(reader["account_id"]);
             account.userId = Convert.ToInt32(reader["user_id"]);
-            account.balance = Convert.ToDecimal(reader["balance"]);
+            account.amount = Convert.ToDecimal(reader["balance"]);
             return account;
         }
 
@@ -260,7 +269,7 @@ namespace TenmoServer.DAO
         public bool checkIfCanAfford(int id, Decimal amount)
         {
             Account account = getAccountById(id);
-            if (account.balance < amount)
+            if (account.amount < amount)
             {
                 return false;
             }
