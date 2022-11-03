@@ -15,18 +15,43 @@ namespace TenmoServer.Controllers
     [ApiController]
     public class TransferController : ControllerBase
     {
-        /*
+
         private readonly ITransferDao _transferDao;
 
         public TransferController( ITransferDao transferDao)
         {
             _transferDao = transferDao;
         }
-       // ITransferDao transferDao = new TransferDao();
+        [HttpGet("pending/{transferId}")]
+        public IEnumerable<Transfer> GetPendingTransfers(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet("user/{userId}")]
+        public IEnumerable<Transfer> GetTransfersByUser(int userId)
+        {
+            throw new NotImplementedException();
+        }
+        [HttpGet("{transferId}")]
+        public IEnumerable<Transfer> GetTransferById(int transferId)
+        {
+            throw new NotImplementedException();
+        }
+        [HttpPost]
+
+        public void PostTransferRequest(int senderId, int targetId, int amount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PostTransfer(int senderId, int targetId, int amount)
+        {
+            throw new NotImplementedException();
+        }
 
 
-
-
+        /*
 
         // GET: <TransferController>/{id}
 
