@@ -73,3 +73,4 @@ JOIN tenmo_user ON tenmo_user.user_id = account.account_id
 
 ROLLBACK;
 SELECT * FROM transfer_type;
+SELECT * FROM transfer
