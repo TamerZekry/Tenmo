@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,17 +20,12 @@ namespace TenmoServer.Controllers
         {
             _userDao = userDao;
         }
-
-        /// <summary>
-        /// return the balance of a user given the user id   at endpoint  apiUrl/user/id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-     
-        
-        [HttpGet("{id}")]
-        public decimal GetUserBalance(int id)
+        [HttpGet("balance/{id}")]
+        public decimal GetBalanceFromUser(int id)
         {
+            //Use bottom after merging with updated DAO branch
+            //return _userDao.GetUserBalance(id);
+        
             return _userDao.GetUserBalanceById(id);
         }
         /// <summary>
@@ -41,7 +36,13 @@ namespace TenmoServer.Controllers
         [HttpGet("")]
         public ActionResult<List<User>>  Get()
         {
-            return _userDao.GetUsers(); ;
+            return _userDao.GetUsers(); 
         }
+        [HttpGet("{id}")]
+        public ActionResult<User> GetUser(int id)
+        {
+            return _userDao.GetUser(id.ToString());
+        }
+
     }
 }
