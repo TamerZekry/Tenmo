@@ -60,8 +60,8 @@ namespace TenmoServer.Controllers
             _transferDao.RequestTransfer(senderId, targetId, amount, false);
         }
         [HttpPost("pay")]
-
-        public void PostTransfer(int senderId, int targetId, int amount)
+        
+        public void PostTransfer(int senderId, int targetId, decimal amount)
         {
             _transferDao.RequestTransfer(senderId, targetId, amount, true);
         }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TenmoServer.DAO;
+using TenmoServer.Models;
 
 namespace TenmoServer.Controllers
 {
@@ -32,6 +33,10 @@ namespace TenmoServer.Controllers
             return _userDao.GetUserBalanceById(id);
         }
 
-
+        [HttpGet("account/{id}")]
+        public int GET(int id)
+        {
+            return _userDao.GetAccountId(id);
+        }
     }
 }

@@ -21,18 +21,7 @@ namespace TenmoServer.Controllers
             _userDao = userDao;
         }
 
-        /// <summary>
-        /// return the balance of a user given the user id   at endpoint  apiUrl/user/id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-     
         
-        //[HttpGet("{balance/{id}}")]
-        //public decimal GetUserBalance(int id)
-        //{
-        //    return _userDao.GetUserBalanceById(id);
-        //}
         /// <summary>
         /// return a List of users at endpoint  apiUrl/user
         /// apiUrl = "https://localhost:44315/";
@@ -48,6 +37,7 @@ namespace TenmoServer.Controllers
         {
             return _userDao.GetUser(id.ToString());
         }
+       
 
     }
 }
