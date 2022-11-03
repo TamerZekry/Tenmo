@@ -15,6 +15,8 @@ namespace TenmoServer.DAO
         {
             connectionString = connString;
         }
+
+
         public List<Transfer> GetPendingTransfers(int userId)
         {
             List<Transfer> transferList = new List<Transfer>();
@@ -23,18 +25,19 @@ namespace TenmoServer.DAO
             {
                 transferConnection.Open();
 
-                SqlCommand cmd = new SqlCommand("SELECT * FROM transfer" +
-                " JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id" +
-                "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id" +
-                " WHERE account_to = @accountTo AND transfer.transfer_status_id = 1;");
+                SqlCommand cmd = new SqlCommand("SELECT * FROM transfer " +
+                "JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id " +
+                "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id " +
+                "JOIN account ON transfer.account_to = account.account_id " +
+                "JOIN tenmo_user ON tenmo_user.user_id = account.account_id " +
+                "WHERE user_id = @accountTo AND transfer.transfer_status_id = 1;");
                 cmd.Parameters.AddWithValue("@accountTo", userId);
                 cmd.Connection = transferConnection;
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    Transfer transfer = null;
-                    transfer = CreateTransferFromReader(reader);
+                    Transfer transfer = CreateTransferFromReader(reader);
                     transferList.Add(transfer);
                 }
             }
@@ -82,7 +85,7 @@ namespace TenmoServer.DAO
                 " JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id" +
                 " WHERE account_to = @userId OR account_from = @userId");
                 */
-                SqlCommand cmd = new SqlCommand(//transfer_id, account_from, account_to, transfer_type_desc, transfer_status_desc, amount
+                SqlCommand cmd = new SqlCommand(
                     "SELECT * FROM transfer " +
                     "JOIN account ON account.user_id = @userId " +
                     "JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id " +
@@ -113,6 +116,9 @@ namespace TenmoServer.DAO
             int senderId;
             int recieverId;
             string insertTransfer;
+            SqlCommand insertCmd;
+
+
             if (sending == true)
             {
                 senderId = requestUserId;
@@ -157,10 +163,10 @@ namespace TenmoServer.DAO
                     transfer.Type = "Send";
                     transfer.Status = "Approved";
 
-                    insertTransfer = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (@typeId, @statusId, @accountFrom, @accountTo)";
+                    insertTransfer = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) OUTPUT INSERTED.* VALUES (@typeId, @statusId, @accountFrom, @accountTo)";
                                            
 
-                    SqlCommand insertCmd = new SqlCommand(insertTransfer, accountConnection);
+                    insertCmd = new SqlCommand(insertTransfer, accountConnection);
                     insertCmd.Parameters.AddWithValue("@typeId", 2);
                     insertCmd.Parameters.AddWithValue("@statusId", 2);
                     insertCmd.Parameters.AddWithValue("@accountFrom", sendersAccount.accoundId);
@@ -210,7 +216,7 @@ namespace TenmoServer.DAO
                     insertTransfer = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) OUTPUT INSERTED.* VALUES (@typeId, @statusId, @accountFrom, @accountTo)";
 
 
-                    SqlCommand insertCmd = new SqlCommand(insertTransfer, accountConnection);
+                    insertCmd = new SqlCommand(insertTransfer, accountConnection);
                     insertCmd.Parameters.AddWithValue("@typeId", 1);
                     insertCmd.Parameters.AddWithValue("@statusId", 1);
                     insertCmd.Parameters.AddWithValue("@accountFrom", sendersAccount.accoundId);
@@ -225,17 +231,17 @@ namespace TenmoServer.DAO
                 SqlCommand cmd1 = new SqlCommand
                     ("BEGIN TRANSACTION;" +
                     "UPDATE account SET balance = @balanceRecieve WHERE account_id = @recieversId;" +
-                    "UPDATE account SET balance = @balanceSend WHERE account_id = @sendersId;" +
-                    insertTransfer +
-                    "OUTPUT"+
-                    "COMMIT;", conn) ;
-                SqlCommand cmd2= new SqlCommand("", conn);
+                    "UPDATE account SET balance = @balanceSend WHERE account_id = @sendersId;");
+             
+                SqlCommand commit = new SqlCommand("COMMIT;", conn);
 
                 cmd1.Parameters.AddWithValue("@balanceRecieve", recieversBalance);
                 cmd1.Parameters.AddWithValue("@recieversId", recieverId);
                 cmd1.Parameters.AddWithValue("@balanceSend", sendersBalance);
                 cmd1.Parameters.AddWithValue("@sendersId", senderId);
-                SqlDataReader reader = cmd1.ExecuteReader();
+                cmd1.ExecuteNonQuery();
+                SqlDataReader reader = insertCmd.ExecuteReader();
+                commit.ExecuteNonQuery();
                 Transfer transfer = null;
                 if (reader.Read())
                 {
@@ -279,11 +285,12 @@ namespace TenmoServer.DAO
                 cmd.Parameters.AddWithValue("@id", accountId);
                 cmd.Connection = transferConnection;
                 SqlDataReader reader = cmd.ExecuteReader();
-
+                
                 if (reader.Read())
                 {
                     account = CreateAccountFromReader(reader);
                 }
+
             }
             if(account == null)
             {
