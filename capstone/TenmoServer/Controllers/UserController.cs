@@ -22,21 +22,27 @@ namespace TenmoServer.Controllers
         }
         //// TODO: GET Specific user balance
 
-        //// GET: /<UserController>
-        //[HttpGet("{id}")]
-        //public decimal GetUserBalance(int id)
-        //{
-        //    return new decimal();
-        //}
+        // GET: /<UserController>
+        [HttpGet("{id}")]
+        public decimal GetBalanceFromUser(int id)
+        {
+            return (decimal)0.0;
+        }
 
 
         // TODO: GET List of users
 
         // Get All registered users
-        [HttpGet("")]
-        public ActionResult<List<User>>  Get()
+        [HttpGet]
+        public ActionResult<List<User>> GetUsers()
         {
             return _userDao.GetUsers(); ;
         }
+        [HttpGet]
+        public ActionResult<List<User>> GetUser(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
