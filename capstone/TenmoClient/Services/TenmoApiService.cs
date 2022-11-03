@@ -1,5 +1,6 @@
 using RestSharp;
 using System.Collections.Generic;
+using System.Data.Common;
 using TenmoClient.Models;
 
 
@@ -11,10 +12,17 @@ namespace TenmoClient.Services
       
         public TenmoApiService(string apiUrl) : base(apiUrl) { }
 
+        public int GetAccountById(int id)
+        {
+            IRestClient clint = TenmoApiService.client;
+            RestRequest request = new RestRequest($"balance/account/{id}");
+            IRestResponse response = client.Get(request);
+            return int.Parse(response.Content);
+        }
          public decimal  getBalanceById (int id)
         {
             IRestClient clint = TenmoApiService.client;
-            RestRequest request = new RestRequest($"user/{id}");
+            RestRequest request = new RestRequest($"balance/{id}");
          //   request.AddObject(obj)
             IRestResponse response = client.Get(request);
             return decimal.Parse(response.Content);
@@ -38,6 +46,7 @@ namespace TenmoClient.Services
 
 
 
+
         public List<User> GetAllUsers()
         {
             RestRequest request = new RestRequest($"user");
@@ -49,6 +58,20 @@ namespace TenmoClient.Services
             }
 
             return response.Data;
+        }
+
+
+        public void TransferPay(int senderId, int targetId, decimal amount)
+        {
+            //int senderId, int targetId, int amount
+            RestRequest request = new RestRequest($"transfer/pay");
+            request.AddObject( new { senderId = senderId, taregetId = targetId, amount = amount });
+            IRestResponse  response = client.Post(request);
+            var ppp = "ddfdf";
+            if (!response.IsSuccessful)
+            {
+                // request failed.
+            }
         }
 
 
