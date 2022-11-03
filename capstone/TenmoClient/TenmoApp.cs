@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TenmoClient.Helpers;
 using TenmoClient.Models;
 using TenmoClient.Services;
 
@@ -74,7 +75,7 @@ namespace TenmoClient
             if (menuSelection == 1)
             {
                 // View logged in user balance
-                console.Pause(tenmoApiService.getBalanceById(tenmoApiService.UserId).ToString("C"));
+                console.Pause("Your current account balance is :" + tenmoApiService.getBalanceById(tenmoApiService.UserId).ToString("C"));
             }
 
             if (menuSelection == 2)
@@ -101,7 +102,25 @@ namespace TenmoClient
 
             if (menuSelection == 4)
             {
-                // Send TE bucks
+                PrintingUserList.PrintUsers( tenmoApiService.GetAllUsers());
+                enterID:
+                int userIdtoSendMonyTo =   console.PromptForInteger("Enter user ID to send to");
+                if (TheChecker.AreEqual( userIdtoSendMonyTo , tenmoApiService.UserId))
+                {
+                    console.PrintError("You can't send money to your self");
+                    goto enterID;
+                }
+                enterMoney:
+                decimal AmountOfMoneytoBeSend = console.PromptForDecimal("Enter amount of money");
+                if (TheChecker.LeftGreaterthe(0, AmountOfMoneytoBeSend))
+                {
+                    console.PrintError("You can't send negative money");
+                    goto enterMoney;
+                }
+                 //call   transfer
+
+
+                console.Pause();
             }
 
             if (menuSelection == 5)
@@ -172,4 +191,8 @@ namespace TenmoClient
             console.Pause();
         }
     }
+
+
+
+
 }

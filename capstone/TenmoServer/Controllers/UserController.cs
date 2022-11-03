@@ -28,11 +28,11 @@ namespace TenmoServer.Controllers
         /// <returns></returns>
      
         
-        [HttpGet("{id}")]
-        public decimal GetUserBalance(int id)
-        {
-            return _userDao.GetUserBalanceById(id);
-        }
+        //[HttpGet("{balance/{id}}")]
+        //public decimal GetUserBalance(int id)
+        //{
+        //    return _userDao.GetUserBalanceById(id);
+        //}
         /// <summary>
         /// return a List of users at endpoint  apiUrl/user
         /// apiUrl = "https://localhost:44315/";
