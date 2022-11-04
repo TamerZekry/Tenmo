@@ -81,11 +81,25 @@ namespace TenmoClient
 
             if (menuSelection == 2)
             {
+                var userNameLookup = new Dictionary<int, string>();
                 var transferList = tenmoApiService.GetAllTransfersForUser();
+                int userAccountId = tenmoApiService.GetAccountById(tenmoApiService.UserId);
+                userNameLookup[userAccountId] = tenmoApiService.Username;
+                foreach (Transfer t in transferList)
+                {
+                    int otherAccountId = (t.To != userAccountId ? t.To : t.From);
+                    if (!userNameLookup.ContainsKey(otherAccountId))
+                    {
+                        userNameLookup[otherAccountId] = tenmoApiService.GetUserByAccountId(otherAccountId).Username;
+                    }
+
+                }
+
                 // View your past transfers
                 console.PrintViewTransfersMenu(
                     transfers: transferList,
-                    accountId: tenmoApiService.GetAccountById(tenmoApiService.UserId));
+                    accountId: tenmoApiService.GetAccountById(tenmoApiService.UserId),
+                    userNameLookup: userNameLookup);
 
                 Transfer selectedTransfer = null;
 
@@ -105,8 +119,11 @@ namespace TenmoClient
                 }
                 while (selectedTransfer == null);
 
-                //View Transfer details.
-                console.PrintTransferDetails(selectedTransfer);
+                if(selectedTransfer != null)
+                {
+                    console.PrintTransferDetails(selectedTransfer, userNameLookup);
+                }
+                
             }
 
             if (menuSelection == 3)

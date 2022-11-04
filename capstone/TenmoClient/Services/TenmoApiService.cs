@@ -19,15 +19,14 @@ namespace TenmoClient.Services
             IRestResponse response = client.Get(request);
             return int.Parse(response.Content);
         }
-         public decimal  getBalanceById (int id)
+        public decimal  getBalanceById (int id)
         {
             IRestClient clint = TenmoApiService.client;
             RestRequest request = new RestRequest($"balance/{id}");
             IRestResponse response = client.Get(request);
             return decimal.Parse(response.Content);
-
-
         }
+
         public List<Transfer> GetAllTransfersForUser()
         {
             RestRequest request = new RestRequest($"transfer/user/{UserId}");
@@ -35,11 +34,6 @@ namespace TenmoClient.Services
 
             return response.Data;
         }
-
-
-
-
-
 
         public List<User> GetAllUsers()
         {
@@ -66,6 +60,15 @@ namespace TenmoClient.Services
             {
                 // request failed.
             }
+        }
+
+        public User GetUserByAccountId(int id)
+        {
+            RestRequest request = new RestRequest($"user/account/{id}");
+            IRestResponse<User> response = client.Get<User>(request);
+
+            return response.Data;
+
         }
 
 

@@ -35,30 +35,47 @@ namespace TenmoClient.Services
             Console.WriteLine("---------");
         }
 
-        public void PrintViewTransfersMenu(List<Transfer> transfers, int accountId)
+        public void PrintTransfer(Transfer transfer, int accountId, string otherUsername)
         {
             string toUsername = string.Empty;
             string fromUsername = string.Empty;
-            string otherUsername = string.Empty;
+
+            string type = "";
+            if (transfer.To == accountId)
+            {
+                otherUsername = fromUsername;
+                type = "From";
+            }
+            else
+            {
+                otherUsername = toUsername;
+                type = "To";
+            }
+            Console.WriteLine($"{transfer.Id} {type}: {otherUsername} {transfer.Amount:C}");
+        }
+        public void PrintViewTransfersMenu(List<Transfer> transfers, int accountId, Dictionary<int, string> userNameLookup)
+        {
 
             Console.WriteLine("Transfers");
             Console.WriteLine("-------------------------------------------");
             Console.WriteLine("Id          From/To                 Amount");
             Console.WriteLine("-------------------------------------------");
+
+            string otherUsername = string.Empty;
             foreach (var transfer in transfers)
             {
                 string type = "";
                 if(transfer.To == accountId)
                 {
-                    otherUsername = fromUsername;
+                    otherUsername = userNameLookup[transfer.From];
                     type = "From";
                 }
                 else
                 {
-                    otherUsername = toUsername;
+                    otherUsername = userNameLookup[transfer.To];
                     type = "To";
                 }
-                Console.WriteLine($"{transfer.Id} {type}: { otherUsername}");
+                Console.WriteLine($"{transfer.Id, -12} {type}: {otherUsername, -15} {transfer.Amount:C}");
             }
             Console.WriteLine("--------");
         }
@@ -80,17 +97,18 @@ namespace TenmoClient.Services
             return loginUser;
         }
 
-        internal void PrintTransferDetails(Transfer transfer)
+        internal void PrintTransferDetails(Transfer transfer, Dictionary<int, string> usernameLookup)
         {
             Console.WriteLine("--------------------------------------------");
             Console.WriteLine("Transfer");
             Console.WriteLine("--------------------------------------------");
             Console.WriteLine($"Id: {transfer.Id}");
-            Console.WriteLine($"From: {transfer.From}");//wrong should be username.
-            Console.WriteLine($"To: {transfer.From}");//wrong should be username.
+            Console.WriteLine($"From: {usernameLookup[transfer.From]}");//wrong should be username.
+            Console.WriteLine($"To: {usernameLookup[transfer.To]}");//wrong should be username.
             Console.WriteLine($"Type: {transfer.Type}");
             Console.WriteLine($"Status: {transfer.Status}");
             Console.WriteLine($"Amount: {transfer.Amount}");
+            Pause();
         }
 
         // Add application-specific UI methods here...
