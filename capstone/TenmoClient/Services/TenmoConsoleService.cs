@@ -55,7 +55,6 @@ namespace TenmoClient.Services
         }
         public void PrintViewTransfersMenu(List<Transfer> transfers, int accountId, Dictionary<int, string> userNameLookup)
         {
-
             Console.WriteLine("Transfers");
             Console.WriteLine("-------------------------------------------");
             Console.WriteLine("Id          From/To                 Amount");
@@ -126,24 +125,17 @@ namespace TenmoClient.Services
             Console.WriteLine("---------");
         }
 
-        public void PrintTransferAprovalMenu()
+        public void PrintPendingTransferMenu()
         {
-            Console.WriteLine("1: Approve");
-            Console.WriteLine("2: Reject");
-            Console.WriteLine("0: Don't approve or reject");
+            throw new NotImplementedException();
         }
-
-        // Add application-specific UI methods here...
-
 
         public void PrintApproveOrReject()
         {
             Console.WriteLine("1: Approve");
             Console.WriteLine("2: Reject");
             Console.WriteLine("0: Don't approve or reject");
+            Console.WriteLine("---------");
         }
-
-
-
     }
 }
