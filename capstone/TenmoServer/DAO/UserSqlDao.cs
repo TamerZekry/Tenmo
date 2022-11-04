@@ -188,7 +188,7 @@ namespace TenmoServer.DAO
                     conn.Open();
 
                     SqlCommand cmd = new SqlCommand(
-                        "SELECT account.account_id,tenmo_user.user_id FROM account, tenmo_user WHERE account.user_id = tenmo_user.user_id AND tenmo_user.user_id = 1001", conn);
+                        "SELECT account.account_id,tenmo_user.user_id FROM account, tenmo_user WHERE account.user_id = tenmo_user.user_id AND tenmo_user.user_id = @id", conn);
                     cmd.Parameters.AddWithValue("@id", UserId);
                     SqlDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())

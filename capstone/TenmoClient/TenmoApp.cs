@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel.Design;
 using TenmoClient.Helpers;
 using TenmoClient.Models;
 using TenmoClient.Services;
+using System.Linq;
 
 namespace TenmoClient
 {
@@ -127,7 +129,7 @@ namespace TenmoClient
                 
             }
 
-            if (menuSelection == 3)
+            if (menuSelection == 3) // View pending transfer
             {
                 var pendingTransfers = tenmoApiService.GetPendingTransfersForUser();
                 var userNameLookup = new Dictionary<int, string>();
@@ -175,7 +177,7 @@ namespace TenmoClient
                 }
             }
 
-            if (menuSelection == 4)
+            if (menuSelection == 4) // Send Money
             {
                 PrintingUserList.PrintUsers( tenmoApiService.GetAllUsers());
                 enterID:
@@ -192,19 +194,31 @@ namespace TenmoClient
                     console.PrintError("You can't send negative money");
                     goto enterMoney;
                 }
-                //call   transfer
-
-
-
-                tenmoApiService.TransferPay(tenmoApiService.UserId, userIdtoSendMonyTo, AmountOfMoneytoBeSend);
+                //call   transfer send money 
+                tenmoApiService.TransferPay(tenmoApiService.UserId, userIdtoSendMonyTo, AmountOfMoneytoBeSend,true);
 
 
                 console.Pause();
             }
 
-            if (menuSelection == 5)
+            if (menuSelection == 5) // Request money
             {
-                // Request TE bucks
+                PrintingUserList.PrintUsers(tenmoApiService.GetAllUsers());
+            enterID2:
+                int userIdtoToRequestMoneyFrom = console.PromptForInteger("Enter user ID to send to");
+                if (TheChecker.AreEqual(userIdtoToRequestMoneyFrom, tenmoApiService.UserId))
+                {
+                    console.PrintError("You can't request money from your self");
+                    goto enterID2;
+                }
+            enterMoney2:
+                decimal AmountOfMoneytoBeRequested = console.PromptForDecimal("Enter amount of money");
+                if (TheChecker.LeftGreaterthe(0, AmountOfMoneytoBeRequested))
+                {
+                    console.PrintError("You can't send negative money");
+                    goto enterMoney2;
+                }
+                tenmoApiService.TransferPay(tenmoApiService.UserId, userIdtoToRequestMoneyFrom, AmountOfMoneytoBeRequested, false);
             }
 
             if (menuSelection == 6)
@@ -215,6 +229,14 @@ namespace TenmoClient
             }
 
             return true;    // Keep the main menu loop going
+        }
+
+        private void ChangeTransforStatus(Transfer transferToBechange, int actionToTake)
+        {
+            // 1 Aproved
+            // 2 Reject
+
+                       
         }
 
         private void Login()

@@ -15,9 +15,10 @@ namespace TenmoServer.DAO
         public bool CheckIfAccountExists(int accountId);
         public Account GetAccountById(int id);
         public bool CheckIfCanAfford(int id, Decimal amount);
-        public Transfer SendTransfer(int fromId, int toId, decimal amount);
+        public Transfer SendTransfer(int fromId, int toId, decimal amount , bool isThisSend);
         public Transfer RequestTransfer(int fromId, int toId, decimal amount);
         public Transfer CreateTransferFromValues(string type, decimal amount, Account sender, Account reciever);
         public Account CreateAccountFromId(int id);
+        void ChangeTransferStatus(int transfer, int appRej);
     }
 }

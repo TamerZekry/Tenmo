@@ -7,6 +7,10 @@ namespace TenmoClient.Models
 {
     public class Transfer
     {
+        public Transfer()
+        {
+
+        }
         public int Id { get; set; }
         public int From { get; set; }
         public int To { get; set; }

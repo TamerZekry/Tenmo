@@ -1,8 +1,9 @@
 using RestSharp;
+using ShredClasses;
 using System.Collections.Generic;
 using System.Data.Common;
+using TenmoClient.Helpers;
 using TenmoClient.Models;
-
 
 namespace TenmoClient.Services
 {
@@ -23,8 +24,15 @@ namespace TenmoClient.Services
         {
             IRestClient clint = TenmoApiService.client;
             RestRequest request = new RestRequest($"balance/{id}");
+<<<<<<< HEAD
             IRestResponse response = client.Get(request);
             return decimal.Parse(response.Content);
+=======
+         
+            IRestResponse response = client.Get(request);
+            return decimal.Parse(response.Content);
+
+>>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
         }
 
         public List<Transfer> GetAllTransfersForUser()
@@ -35,6 +43,7 @@ namespace TenmoClient.Services
             return response.Data;
         }
 
+<<<<<<< HEAD
         public List<Transfer> GetPendingTransfersForUser()
         {
             RestRequest request = new RestRequest($"transfer/pending/{UserId}");
@@ -43,6 +52,8 @@ namespace TenmoClient.Services
             return response.Data;
         }
 
+=======
+>>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
         public List<User> GetAllUsers()
         {
             RestRequest request = new RestRequest($"user");
@@ -56,9 +67,9 @@ namespace TenmoClient.Services
             return response.Data;
         }
 
-
-        public void TransferPay(int senderId, int targetId, decimal amount)
+        public void TransferPay(int senderId, int targetId, decimal amount, bool isThisSend)
         {
+<<<<<<< HEAD
             //int senderId, int targetId, int amount
             RestRequest request = new RestRequest($"transfer/pay");
             request.AddJsonBody( new { senderId = senderId, taregetId = targetId, amount = amount });
@@ -79,7 +90,27 @@ namespace TenmoClient.Services
 
         }
 
+=======
+            
+            RestRequest request = new RestRequest($"transfer/SendMoney");
+            request.AddJsonBody(new transfere_request(senderId,  targetId,  amount, isThisSend));
+            request.AddHeader("Content-Type", "application/json");
+            IRestResponse response = client.Post(request);
+            //if (!response.IsSuccessful)
+            //{
+            //    return BadRequest()// request failed.
+            //}
+        }
 
+        public void ChangeTransferStatus(int _transid, int _appRej)
+        {
+            RestRequest request = new RestRequest($"transfer/AppRej");
+            request.AddJsonBody(new TransferAppRej(_transid,_appRej));
+            request.AddHeader("Content-Type", "application/json");
+            IRestResponse response = client.Post(request);
+>>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
+
+        }
 
         // Add methods to call api here...
         // TODO: 3. As an authenticated user of the system, I need to be able to see my Account Balance.
