@@ -91,13 +91,22 @@ namespace TenmoServer.DAO
             using (SqlConnection transferConnection = new SqlConnection(connectionString))
             {
                 transferConnection.Open();
-
+                /*
                 SqlCommand cmd = new SqlCommand("SELECT * FROM transfer " +
                 "JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id " +
                 "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id " +
                 "JOIN account ON transfer.account_to = account.account_id " +
                 "JOIN tenmo_user ON tenmo_user.user_id = account.account_id " +
                 "WHERE user_id = @accountTo AND transfer.transfer_status_id = 1;");
+                */
+
+                SqlCommand cmd = new SqlCommand(
+                    "SELECT transfer_id, account_from, account_to, transfer_type_desc, transfer_status_desc, amount FROM transfer " +
+                    "JOIN account ON account.user_id = @accountTo " +
+                    "JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id " +
+                    "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id " +
+                    "WHERE transfer.account_to = account.account_id AND transfer.transfer_status_id = 1;");
+
                 cmd.Parameters.AddWithValue("@accountTo", userId);
                 cmd.Connection = transferConnection;
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -534,7 +543,7 @@ namespace TenmoServer.DAO
 
             return cmd;
         }
-
+       
         private Transfer CreateTransferFromReader(SqlDataReader reader)
         {
             Transfer transfer = new Transfer();

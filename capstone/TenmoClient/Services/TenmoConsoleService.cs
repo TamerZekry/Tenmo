@@ -34,6 +34,51 @@ namespace TenmoClient.Services
             Console.WriteLine("0: Exit");
             Console.WriteLine("---------");
         }
+
+        public void PrintTransfer(Transfer transfer, int accountId, string otherUsername)
+        {
+            string toUsername = string.Empty;
+            string fromUsername = string.Empty;
+
+            string type = "";
+            if (transfer.To == accountId)
+            {
+                otherUsername = fromUsername;
+                type = "From";
+            }
+            else
+            {
+                otherUsername = toUsername;
+                type = "To";
+            }
+            Console.WriteLine($"{transfer.Id} {type}: {otherUsername} {transfer.Amount:C}");
+        }
+        public void PrintViewTransfersMenu(List<Transfer> transfers, int accountId, Dictionary<int, string> userNameLookup)
+        {
+            Console.WriteLine("Transfers");
+            Console.WriteLine("-------------------------------------------");
+            Console.WriteLine("Id          From/To                 Amount");
+            Console.WriteLine("-------------------------------------------");
+
+            string otherUsername = string.Empty;
+            foreach (var transfer in transfers)
+            {
+                string type = "";
+                if(transfer.To == accountId)
+                {
+                    otherUsername = userNameLookup[transfer.From];
+                    type = "From";
+                }
+                else
+                {
+                    otherUsername = userNameLookup[transfer.To];
+                    type = "To";
+                }
+                Console.WriteLine($"{transfer.Id, -12} {type}: {otherUsername, -15} {transfer.Amount:C}");
+            }
+            Console.WriteLine("--------");
+        }
+
         public LoginUser PromptForLogin()
         {
             string username = PromptForString("User name");
@@ -51,17 +96,46 @@ namespace TenmoClient.Services
             return loginUser;
         }
 
-        // Add application-specific UI methods here...
+        public void PrintTransferDetails(Transfer transfer, Dictionary<int, string> usernameLookup)
+        {
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("Transfer");
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine($"Id: {transfer.Id}");
+            Console.WriteLine($"From: {usernameLookup[transfer.From]}");//wrong should be username.
+            Console.WriteLine($"To: {usernameLookup[transfer.To]}");//wrong should be username.
+            Console.WriteLine($"Type: {transfer.Type}");
+            Console.WriteLine($"Status: {transfer.Status}");
+            Console.WriteLine($"Amount: {transfer.Amount}");
+            Pause();
+        }
 
+        public void PrintPendingTransferMenu(List<Transfer> pendingTransfers, Dictionary<int, string> userNameLookup)
+        {
+            Console.WriteLine("-------------------------------------------");
+            Console.WriteLine("Pending Transfers");
+            Console.WriteLine("ID          To                     Amount");
+            Console.WriteLine("-------------------------------------------");
+
+            foreach(var transfer in pendingTransfers)
+            {
+                Console.WriteLine($"{transfer.Id,-8}{userNameLookup[transfer.From],-16}{transfer.Amount:C}");
+            }
+
+            Console.WriteLine("---------");
+        }
+
+        public void PrintPendingTransferMenu()
+        {
+            throw new NotImplementedException();
+        }
 
         public void PrintApproveOrReject()
         {
             Console.WriteLine("1: Approve");
             Console.WriteLine("2: Reject");
             Console.WriteLine("0: Don't approve or reject");
+            Console.WriteLine("---------");
         }
-
-
-
     }
 }

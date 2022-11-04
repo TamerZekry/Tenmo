@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using TenmoServer.Models;
 
 namespace TenmoServer.DAO
@@ -13,5 +14,7 @@ namespace TenmoServer.DAO
         public decimal GetBalanceByAccount(int _account);
 
         public string GetUsernameByAcount(int _account);
+        User GetUserById(int id);
+        User GetUserByAccountId(int accountId);
     }
 }
