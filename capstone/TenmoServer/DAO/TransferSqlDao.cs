@@ -237,15 +237,9 @@ namespace TenmoServer.DAO
                 SqlCommand cmd1 = new SqlCommand
                     ("BEGIN TRANSACTION;" +
                     "UPDATE account SET balance = @balanceRecieve WHERE account_id = @recieversId;" +
-<<<<<<< HEAD
-                    "UPDATE account SET balance = @balanceSend WHERE account_id = @sendersId;", conn);
-             
-                SqlCommand commit = new SqlCommand("COMMIT;", conn);
-=======
                     "UPDATE account SET balance = @balanceSend WHERE account_id = @sendersId; COMMIT;", conn);
 
                 //   SqlCommand commit = new SqlCommand("COMMIT;", conn);
->>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
 
                 cmd1.Parameters.AddWithValue("@balanceRecieve", recieversBalance);
                 cmd1.Parameters.AddWithValue("@recieversId", recieverId);
@@ -517,12 +511,7 @@ namespace TenmoServer.DAO
 
             return cmd;
         }
-<<<<<<< HEAD
        
-/*
-=======
-
->>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
         private Transfer CreateTransferFromReader(SqlDataReader reader)
         {
             Transfer transfer = new Transfer();
@@ -545,6 +534,5 @@ namespace TenmoServer.DAO
             };
             return result;
         }
-*/
     }
 }

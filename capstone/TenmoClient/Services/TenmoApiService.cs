@@ -24,15 +24,8 @@ namespace TenmoClient.Services
         {
             IRestClient clint = TenmoApiService.client;
             RestRequest request = new RestRequest($"balance/{id}");
-<<<<<<< HEAD
             IRestResponse response = client.Get(request);
             return decimal.Parse(response.Content);
-=======
-         
-            IRestResponse response = client.Get(request);
-            return decimal.Parse(response.Content);
-
->>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
         }
 
         public List<Transfer> GetAllTransfersForUser()
@@ -43,7 +36,6 @@ namespace TenmoClient.Services
             return response.Data;
         }
 
-<<<<<<< HEAD
         public List<Transfer> GetPendingTransfersForUser()
         {
             RestRequest request = new RestRequest($"transfer/pending/{UserId}");
@@ -52,8 +44,6 @@ namespace TenmoClient.Services
             return response.Data;
         }
 
-=======
->>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
         public List<User> GetAllUsers()
         {
             RestRequest request = new RestRequest($"user");
@@ -69,28 +59,6 @@ namespace TenmoClient.Services
 
         public void TransferPay(int senderId, int targetId, decimal amount, bool isThisSend)
         {
-<<<<<<< HEAD
-            //int senderId, int targetId, int amount
-            RestRequest request = new RestRequest($"transfer/pay");
-            request.AddJsonBody( new { senderId = senderId, taregetId = targetId, amount = amount });
-            IRestResponse  response = client.Post(request);
-            var ppp = "ddfdf";
-            if (!response.IsSuccessful)
-            {
-                // request failed.
-            }
-        }
-
-        public User GetUserByAccountId(int id)
-        {
-            RestRequest request = new RestRequest($"user/account/{id}");
-            IRestResponse<User> response = client.Get<User>(request);
-
-            return response.Data;
-
-        }
-
-=======
             
             RestRequest request = new RestRequest($"transfer/SendMoney");
             request.AddJsonBody(new transfere_request(senderId,  targetId,  amount, isThisSend));
@@ -108,10 +76,17 @@ namespace TenmoClient.Services
             request.AddJsonBody(new TransferAppRej(_transid,_appRej));
             request.AddHeader("Content-Type", "application/json");
             IRestResponse response = client.Post(request);
->>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
 
         }
 
+        public User GetUserByAccountId(int id)
+        {
+            RestRequest request = new RestRequest($"user/account/{id}");
+            IRestResponse<User> response = client.Get<User>(request);
+
+            return response.Data;
+
+        }
         // Add methods to call api here...
         // TODO: 3. As an authenticated user of the system, I need to be able to see my Account Balance.
 
