@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-<<<<<<< HEAD
 using System.Linq;
-=======
 using System.ComponentModel.Design;
->>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
 using TenmoClient.Helpers;
 using TenmoClient.Models;
 using TenmoClient.Services;
@@ -111,7 +108,6 @@ namespace TenmoClient
 
                 do
                 {
-<<<<<<< HEAD
                     int selectedId = console.PromptForInteger("Please enter transfer ID to view details (0 to cancel): ");
                     if (selectedId == 0)
                     {
@@ -123,15 +119,6 @@ namespace TenmoClient
                     {
                         console.PrintError("Please select a valid transfer Id");
                     }
-=======
-                    Console.WriteLine($"Id: {transfer.Id}");
-                    Console.WriteLine($"Type: {transfer.Type}");
-                    Console.WriteLine($"From: {transfer.From}");
-                    Console.WriteLine($"To: {transfer.To}");
-                    Console.WriteLine($"Amount: {transfer.Amount}");
-                    Console.WriteLine($"Id: {transfer.Status}");
-                    Console.WriteLine("--------------------");
->>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
                 }
                 while (selectedTransfer == null);
 
@@ -144,52 +131,6 @@ namespace TenmoClient
 
             if (menuSelection == 3) // View pending transfer
             {
-<<<<<<< HEAD
-                var pendingTransfers = tenmoApiService.GetPendingTransfersForUser();
-                var userNameLookup = new Dictionary<int, string>();
-                int userAccountId = tenmoApiService.GetAccountById(tenmoApiService.UserId);
-
-                foreach (Transfer t in pendingTransfers)
-                {
-                    int otherAccountId = (t.To != userAccountId ? t.To : t.From);
-                    if (!userNameLookup.ContainsKey(otherAccountId))
-                    {
-                        userNameLookup[otherAccountId] = tenmoApiService.GetUserByAccountId(otherAccountId).Username;
-                    }
-
-                }
-                console.PrintPendingTransferMenu(pendingTransfers, userNameLookup);
-                int transferId = -1;
-                do
-                {
-                    transferId = console.PromptForInteger("Please enter transfer ID to approve/reject (0 to cancel)");
-
-                    if(pendingTransfers.Where((t) => t.Id == transferId).Any() == false)
-                    {
-                        transferId = -1;
-                        console.PrintError("Please select a valid transfer Id.");
-                    }
-                    else if (transferId == 0)
-                    {
-                        break;
-                    }
-                }
-                while (transferId == -1);
-
-                if (transferId != 0)
-                {
-                    console.PrintTransferAprovalMenu();
-                    int selectionId = console.PromptForInteger("Please choose an option", 0, 2);
-                    if(selectionId == 1)
-                    {
-                        //approve transfer
-                    }
-                    else if(selectionId == 2)
-                    {
-                        //deny transfer
-                    }
-                }
-=======
                
               var  PendingTransfers = (from x in  tenmoApiService.GetAllTransfersForUser() where x.Status == "Pending"  select x).ToList<Transfer>() ;
                 Console.WriteLine($"Transfers Count: {PendingTransfers.Count}");
@@ -227,7 +168,6 @@ namespace TenmoClient
 
 
                  // COMMIT THE CHANGES IN BALANCE
->>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
             }
 
             if (menuSelection == 4) // Send Money
