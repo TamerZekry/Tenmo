@@ -35,9 +35,13 @@ namespace TenmoServer.Controllers
         [HttpGet("{id}")]
         public ActionResult<User> GetUser(int id)
         {
-            return _userDao.GetUser(id.ToString());
+            return _userDao.GetUserById(id);
         }
-       
 
+        [HttpGet("account/{accountId}")]
+        public ActionResult<User> GetUserByAccountId(int accountId)
+        {
+            return _userDao.GetUserByAccountId(accountId);
+        }
     }
 }

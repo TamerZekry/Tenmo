@@ -20,28 +20,40 @@ namespace TenmoClient.Services
             IRestResponse response = client.Get(request);
             return int.Parse(response.Content);
         }
-         public decimal  getBalanceById (int id)
+        public decimal  getBalanceById (int id)
         {
             IRestClient clint = TenmoApiService.client;
             RestRequest request = new RestRequest($"balance/{id}");
+<<<<<<< HEAD
+            IRestResponse response = client.Get(request);
+            return decimal.Parse(response.Content);
+=======
          
             IRestResponse response = client.Get(request);
             return decimal.Parse(response.Content);
 
+>>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
         }
+
         public List<Transfer> GetAllTransfersForUser()
         {
             RestRequest request = new RestRequest($"transfer/user/{UserId}");
             IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
 
-            if(!response.IsSuccessful)
-            {
-                // request failed.
-            }
+            return response.Data;
+        }
+
+<<<<<<< HEAD
+        public List<Transfer> GetPendingTransfersForUser()
+        {
+            RestRequest request = new RestRequest($"transfer/pending/{UserId}");
+            IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
 
             return response.Data;
         }
 
+=======
+>>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
         public List<User> GetAllUsers()
         {
             RestRequest request = new RestRequest($"user");
@@ -57,6 +69,28 @@ namespace TenmoClient.Services
 
         public void TransferPay(int senderId, int targetId, decimal amount, bool isThisSend)
         {
+<<<<<<< HEAD
+            //int senderId, int targetId, int amount
+            RestRequest request = new RestRequest($"transfer/pay");
+            request.AddJsonBody( new { senderId = senderId, taregetId = targetId, amount = amount });
+            IRestResponse  response = client.Post(request);
+            var ppp = "ddfdf";
+            if (!response.IsSuccessful)
+            {
+                // request failed.
+            }
+        }
+
+        public User GetUserByAccountId(int id)
+        {
+            RestRequest request = new RestRequest($"user/account/{id}");
+            IRestResponse<User> response = client.Get<User>(request);
+
+            return response.Data;
+
+        }
+
+=======
             
             RestRequest request = new RestRequest($"transfer/SendMoney");
             request.AddJsonBody(new transfere_request(senderId,  targetId,  amount, isThisSend));
@@ -74,6 +108,7 @@ namespace TenmoClient.Services
             request.AddJsonBody(new TransferAppRej(_transid,_appRej));
             request.AddHeader("Content-Type", "application/json");
             IRestResponse response = client.Post(request);
+>>>>>>> 7ae2a80d37bff2b6e9b986ca804e3648f1508539
 
         }
 

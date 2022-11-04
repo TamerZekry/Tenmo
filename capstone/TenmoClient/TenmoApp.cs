@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.ComponentModel.Design;
 using TenmoClient.Helpers;
 using TenmoClient.Models;
@@ -82,20 +83,50 @@ namespace TenmoClient
 
             if (menuSelection == 2)
             {
-                // View your past transfers
-                var transfers = tenmoApiService.GetAllTransfersForUser();
-                Console.WriteLine($"Transfers Count: {transfers.Count}");
-                foreach(var transfer in transfers) // placeholder see README for desired result. (USE CASE: 5)
+                var userNameLookup = new Dictionary<int, string>();
+                var transferList = tenmoApiService.GetAllTransfersForUser();
+                int userAccountId = tenmoApiService.GetAccountById(tenmoApiService.UserId);
+                userNameLookup[userAccountId] = tenmoApiService.Username;
+
+                foreach (Transfer t in transferList)
                 {
-                    Console.WriteLine($"Id: {transfer.Id}");
-                    Console.WriteLine($"Type: {transfer.Type}");
-                    Console.WriteLine($"From: {transfer.From}");
-                    Console.WriteLine($"To: {transfer.To}");
-                    Console.WriteLine($"Amount: {transfer.Amount}");
-                    Console.WriteLine($"Id: {transfer.Status}");
-                    Console.WriteLine("--------------------");
+                    int otherAccountId = (t.To != userAccountId ? t.To : t.From);
+                    if (!userNameLookup.ContainsKey(otherAccountId))
+                    {
+                        userNameLookup[otherAccountId] = tenmoApiService.GetUserByAccountId(otherAccountId).Username;
+                    }
+
                 }
-                console.Pause();
+
+                // View your past transfers
+                console.PrintViewTransfersMenu(
+                    transfers: transferList,
+                    accountId: tenmoApiService.GetAccountById(tenmoApiService.UserId),
+                    userNameLookup: userNameLookup);
+
+                Transfer selectedTransfer = null;
+
+                do
+                {
+                    int selectedId = console.PromptForInteger("Please enter transfer ID to view details (0 to cancel): ");
+                    if (selectedId == 0)
+                    {
+                        break;
+                    }
+
+                    selectedTransfer = transferList.Where((t => t.Id == selectedId)).FirstOrDefault();
+                    if (selectedTransfer == null)
+                    {
+                        console.PrintError("Please select a valid transfer Id");
+                    }
+                }
+                while (selectedTransfer == null);
+
+                if(selectedTransfer != null)
+                {
+                    console.PrintTransferDetails(selectedTransfer, userNameLookup);
+                }
+                
             }
 
             if (menuSelection == 3) // View pending transfer

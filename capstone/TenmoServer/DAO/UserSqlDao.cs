@@ -45,6 +45,34 @@ namespace TenmoServer.DAO
             return returnUser;
         }
 
+        public User GetUserById(int userId)
+        {
+            User returnUser = null;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand("SELECT user_id, username, password_hash, salt FROM tenmo_user WHERE user_id = @userId", conn);
+                    cmd.Parameters.AddWithValue("@userId", userId);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        returnUser = GetUserFromReader(reader);
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                throw;
+            }
+
+            return returnUser;
+        }
+
         public List<User> GetUsers()
         {
             List<User> returnUsers = new List<User>();
@@ -148,8 +176,6 @@ namespace TenmoServer.DAO
             return u;
         }
 
-
-
         public int GetAccountId(int UserId)
         {
             //SELECT account.account_id,tenmo_user.user_id             FROM account, tenmo_user WHERE account.user_id = tenmo_user.user_id AND tenmo_user.user_id = 1001
@@ -178,6 +204,28 @@ namespace TenmoServer.DAO
             }
 
         }
+
+        public User GetUserByAccountId(int accountId)
+        {
+            using(SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(
+                    "SELECT * FROM tenmo_user " +
+                    "JOIN account ON tenmo_user.user_id = account.user_id " +
+                    "WHERE account_id = @accountId", conn);
+                cmd.Parameters.AddWithValue("@accountId", accountId);
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                User user = null;
+                if (reader.Read())
+                {
+                    user = GetUserFromReader(reader);
+                }
+
+                return user;
+            }
+        }
     }
-    }
+ }
 
