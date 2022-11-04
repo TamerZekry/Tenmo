@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using TenmoServer.Models;
 
@@ -55,7 +56,7 @@ namespace TenmoServer.DAO
             return transferList;
         }
 
-        public Transfer GetTransferById(int id)
+        public Transfer GetTransferById(int id) 
         {
             Transfer transfer = new Transfer();
 
@@ -63,11 +64,15 @@ namespace TenmoServer.DAO
             {
                 transferConnection.Open();
 
-                SqlCommand cmd = new SqlCommand("SELECT * FROM transfer" +
-                " JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id" +
-                "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id" +
-                " WHERE transfer_id = @transferId;");
+                //SqlCommand cmd = new SqlCommand("SELECT * FROM transfer" +
+                //" JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id" +
+                //"JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id" +
+                //" WHERE transfer_id = @transferId;");
+
+                SqlCommand cmd = new SqlCommand("SELECT * FROM transfer  WHERE transfer_id = @transferId");
                 cmd.Parameters.AddWithValue("@transferId", id);
+
+
                 cmd.Connection = transferConnection;
                 SqlDataReader reader = cmd.ExecuteReader();
 
@@ -406,24 +411,51 @@ namespace TenmoServer.DAO
             //return null; // transfer; 
             #endregion
         }
-        public void ChangeTransferStatus(int transfer, int appRej)
+        public bool ChangeTransferStatus(int transfer_id, int appRej)
         {
             /*
                1: Approve
                2: Reject
             */
+           
+            if (appRej == 2) { return true; }
+            else
+            {
+                var TransferToApproved = GetTransferById(transfer_id);
+                if (TransferToApproved.Amount <
+                    _userDao.GetBalanceByAccount(TransferToApproved.From))
+                {
+                    //change the balance
+                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    {
+                        conn.Open();
+                        string sqlString =
+                             @"UPDATE account SET balance -= @amount WHERE account_id =  @Sender_ID ;  UPDATE account SET balance += @amount WHERE account_id = @Reciever_ID ;";
+                        SqlCommand sqlCommand = new SqlCommand(sqlString, conn);
+                        sqlCommand.Parameters.AddWithValue("@amount", TransferToApproved.Amount);
+                        sqlCommand.Parameters.AddWithValue("@Sender_ID", TransferToApproved.From);
+                        sqlCommand.Parameters.AddWithValue("@Reciever_ID", TransferToApproved.To);
+                        sqlCommand.ExecuteNonQuery();
+
+
+                    }
+                }
+                else
+                {
+                    
+                    return false;
+                }
+            }
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(@"UPDATE transfer set transfer_status_id = @statusID WHERE transfer_id = @transID;", conn);
                 cmd.Parameters.AddWithValue("@statusID", appRej + 1);
-                cmd.Parameters.AddWithValue("@transID",transfer);
+                cmd.Parameters.AddWithValue("@transID",transfer_id);
                 cmd.ExecuteNonQuery();
             }
+            return true;
         }
-
-
-
         public Transfer RequestTransfer(int fromId, int toId, decimal amount)
         {
             Account sender = CreateAccountFromId(fromId);
@@ -518,8 +550,10 @@ namespace TenmoServer.DAO
             transfer.Id = Convert.ToInt32(reader["transfer_id"]);
             transfer.From = Convert.ToInt32(reader["account_from"]);
             transfer.To = Convert.ToInt32(reader["account_to"]);
+
             transfer.Type = Convert.ToInt32(reader["transfer_type_id"]) == 1 ? "Request" : "Send";
             transfer.Status = getStatusStringFromInt(Convert.ToInt32(reader["transfer_status_id"]));
+         
             transfer.Amount = Convert.ToDecimal(reader["amount"]);
             return transfer;
         }

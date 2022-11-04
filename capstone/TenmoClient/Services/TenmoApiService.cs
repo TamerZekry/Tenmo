@@ -1,7 +1,9 @@
 using RestSharp;
 using ShredClasses;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Threading;
 using TenmoClient.Helpers;
 using TenmoClient.Models;
 
@@ -75,8 +77,13 @@ namespace TenmoClient.Services
             RestRequest request = new RestRequest($"transfer/AppRej");
             request.AddJsonBody(new TransferAppRej(_transid,_appRej));
             request.AddHeader("Content-Type", "application/json");
-            IRestResponse response = client.Post(request);
+            IRestResponse<bool> response = client.Post<bool>(request);
+            if (!response.Data)
+            {
+                Console.WriteLine("You don't have enough money to send");
+                Thread.Sleep(2000);
 
+            }
         }
 
         public User GetUserByAccountId(int id)

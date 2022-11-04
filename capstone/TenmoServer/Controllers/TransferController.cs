@@ -79,9 +79,9 @@ namespace TenmoServer.Controllers
 
         // public void ApproveReject(Transfer _Transfer, int _AppRej)
         [HttpPost("AppRej")]
-        public void ApproveReject(TransferAppRej transferApp)
+        public ActionResult<bool> ApproveReject(TransferAppRej transferApp)
         {
-            _transferDao.ChangeTransferStatus(transferApp.Trans_id, transferApp.Action_id);
+          return   _transferDao.ChangeTransferStatus(transferApp.Trans_id, transferApp.Action_id);
         }
 
     }

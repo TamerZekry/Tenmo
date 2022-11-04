@@ -67,6 +67,8 @@ namespace TenmoClient
 
         private bool RunAuthenticated()
         {
+            int Current_UserAccount = tenmoApiService.GetAccountById(tenmoApiService.UserId);
+
             console.PrintMainMenu(tenmoApiService.Username);
             int menuSelection = console.PromptForInteger("Please choose an option", 0, 6);
             if (menuSelection == 0)
@@ -132,7 +134,7 @@ namespace TenmoClient
             if (menuSelection == 3) // View pending transfer
             {
                
-              var  PendingTransfers = (from x in  tenmoApiService.GetAllTransfersForUser() where x.Status == "Pending"  select x).ToList<Transfer>() ;
+              var  PendingTransfers = (from x in  tenmoApiService.GetAllTransfersForUser() where (x.Status == "Pending" && x.From == Current_UserAccount.ToString()) select x).ToList<Transfer>();
                 Console.WriteLine($"Transfers Count: {PendingTransfers.Count}");
 
                 var userNameLookup = new Dictionary<int, string>();
@@ -163,7 +165,7 @@ namespace TenmoClient
                 var TransferToBechange = PendingTransfers.FirstOrDefault(x => x.Id == transferId);
                 // CHANGE THE STATUS either approved it or rejected 
                console.PrintApproveOrReject();
-                int actionToTake = console.PromptForInteger("Please chosse number", 0, 2, 0);
+                int actionToTake = console.PromptForInteger("Please choose number", 0, 2, 0);
 
                 if (actionToTake == 0)
                 {
@@ -179,19 +181,38 @@ namespace TenmoClient
 
             if (menuSelection == 4) // Send Money
             {
-                PrintingUserList.PrintUsers( tenmoApiService.GetAllUsers());
+                var UserList = tenmoApiService.GetAllUsers();
+                PrintingUserList.PrintUsers(UserList);
+
                 enterID:
-                int userIdtoSendMonyTo =   console.PromptForInteger("Enter user ID to send to");
+                int userIdtoSendMonyTo =   console.PromptForInteger("Enter user ID to send to",0);
+                if (userIdtoSendMonyTo == 0)
+                {
+                    return true;
+                }
+
                 if (TheChecker.AreEqual( userIdtoSendMonyTo , tenmoApiService.UserId))
                 {
                     console.PrintError("You can't send money to your self");
                     goto enterID;
                 }
-                enterMoney:
-                decimal AmountOfMoneytoBeSend = console.PromptForDecimal("Enter amount of money");
-                if (TheChecker.LeftGreaterthe(0, AmountOfMoneytoBeSend))
+                if ((UserList.FirstOrDefault(x => x.UserId == userIdtoSendMonyTo)) == null)
                 {
-                    console.PrintError("You can't send negative money");
+                    console.PrintError("Please Enter a valid User id");
+                    goto enterID;
+                }
+                enterMoney:
+                decimal AmountOfMoneytoBeSend = console.PromptForDecimal("Enter amount of money",0.00m);
+                if (AmountOfMoneytoBeSend == 0 )
+                {
+                    return true;
+                }
+
+                if (TheChecker.LeftGreaterthe(0, AmountOfMoneytoBeSend) || 
+                    AmountOfMoneytoBeSend > tenmoApiService.getBalanceById(tenmoApiService.UserId)
+                    )
+                {
+                    console.PrintError("You can't send this amount money");
                     goto enterMoney;
                 }
                 //call   transfer send money 
