@@ -5,7 +5,6 @@ using System.Data.Common;
 using TenmoClient.Helpers;
 using TenmoClient.Models;
 
-
 namespace TenmoClient.Services
 {
     public class TenmoApiService : AuthenticatedApiService
@@ -29,8 +28,6 @@ namespace TenmoClient.Services
             IRestResponse response = client.Get(request);
             return decimal.Parse(response.Content);
 
-
-
         }
         public List<Transfer> GetAllTransfersForUser()
         {
@@ -45,11 +42,6 @@ namespace TenmoClient.Services
             return response.Data;
         }
 
-
-
-
-
-
         public List<User> GetAllUsers()
         {
             RestRequest request = new RestRequest($"user");
@@ -63,15 +55,11 @@ namespace TenmoClient.Services
             return response.Data;
         }
 
-
-         
-
-
-        public void TransferPay(int senderId, int targetId, decimal amount)
+        public void TransferPay(int senderId, int targetId, decimal amount, bool isThisSend)
         {
             
             RestRequest request = new RestRequest($"transfer/SendMoney");
-            request.AddJsonBody(new transfere_request(senderId,  targetId,  amount));
+            request.AddJsonBody(new transfere_request(senderId,  targetId,  amount, isThisSend));
             request.AddHeader("Content-Type", "application/json");
             IRestResponse response = client.Post(request);
             //if (!response.IsSuccessful)
@@ -80,9 +68,14 @@ namespace TenmoClient.Services
             //}
         }
 
+        public void ChangeTransferStatus(int _transid, int _appRej)
+        {
+            RestRequest request = new RestRequest($"transfer/AppRej");
+            request.AddJsonBody(new TransferAppRej(_transid,_appRej));
+            request.AddHeader("Content-Type", "application/json");
+            IRestResponse response = client.Post(request);
 
-
-
+        }
 
         // Add methods to call api here...
         // TODO: 3. As an authenticated user of the system, I need to be able to see my Account Balance.

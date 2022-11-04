@@ -313,14 +313,25 @@ namespace TenmoServer.DAO
             }
             return true;
         }
-
-        public Transfer SendTransfer(int fromId, int toId, decimal amount)
+      
+        
+        /// <summary>
+        ///  Sending or requesting money Transfer
+        /// </summary>
+        /// <param name="fromId"> Sending account number   </param>
+        /// <param name="toId"> Reciveing account number   </param>
+        /// <param name="amount"> Amount of money</param>
+        /// <param name="isThisSend"> True for sending or false for receiving </param>
+        /// <returns></returns>
+        public Transfer SendTransfer(int fromId, int toId, decimal amount, bool isThisSend)
         {
             Transfer result = new Transfer();
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            if (isThisSend) //this is send money request
             {
-                conn.Open();
-                string commandString = @"
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string commandString = @"
                     BEGIN TRANSACTION; 
                     UPDATE account SET balance -= @amount WHERE account_id = @Sender_ID; 
                     UPDATE account SET balance += @amount WHERE account_id = @Reciever_ID; 
@@ -328,15 +339,41 @@ namespace TenmoServer.DAO
                     OUTPUT INSERTED.* 
                     VALUES (2,2,@Sender_ID,@Reciever_ID,@Amount);
                     COMMIT;";
-                SqlCommand sqlCommand = new SqlCommand(commandString, conn);
-                sqlCommand.Parameters.AddWithValue("@Amount", amount);
-                sqlCommand.Parameters.AddWithValue("@Sender_ID", _userDao.GetAccountId(fromId));
-                sqlCommand.Parameters.AddWithValue("@Reciever_ID", _userDao.GetAccountId(toId));
+                    SqlCommand sqlCommand = new SqlCommand(commandString, conn);
+                    sqlCommand.Parameters.AddWithValue("@Amount", amount);
+                    sqlCommand.Parameters.AddWithValue("@Sender_ID", _userDao.GetAccountId(fromId));
+                    sqlCommand.Parameters.AddWithValue("@Reciever_ID", _userDao.GetAccountId(toId));
 
-                SqlDataReader reader = sqlCommand.ExecuteReader();
-                if (reader.Read())
+                    SqlDataReader reader = sqlCommand.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        result = CreateTransferFromReader(reader);
+                    }
+                }
+            }
+            else // this is request money request  AND IT SHOULDN'T CHANGE SENDER OR RECIEVER BALANCE UNTIL its APPROVED   
+            {
+                /* UPDATE account SET balance -= @amount WHERE account_id =  @Sender_ID ; 
+                   UPDATE account SET balance += @amount WHERE account_id = @Reciever_ID  ; */
+                using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    result = CreateTransferFromReader(reader);
+                    conn.Open();
+                    string commandString = @"
+                    BEGIN TRANSACTION; 
+                    INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) 
+                    OUTPUT INSERTED.* 
+                    VALUES (1,1,@Sender_ID,@Reciever_ID,@Amount);
+                    COMMIT;";
+                    SqlCommand sqlCommand = new SqlCommand(commandString, conn);
+                    sqlCommand.Parameters.AddWithValue("@Amount", amount);
+                    sqlCommand.Parameters.AddWithValue("@Sender_ID", _userDao.GetAccountId( toId ));
+                    sqlCommand.Parameters.AddWithValue("@Reciever_ID", _userDao.GetAccountId(fromId));
+
+                    SqlDataReader reader = sqlCommand.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        result = CreateTransferFromReader(reader);
+                    }
                 }
             }
 
@@ -360,6 +397,23 @@ namespace TenmoServer.DAO
             //return null; // transfer; 
             #endregion
         }
+        public void ChangeTransferStatus(int transfer, int appRej)
+        {
+            /*
+               1: Approve
+               2: Reject
+            */
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(@"UPDATE transfer set transfer_status_id = @statusID WHERE transfer_id = @transID;", conn);
+                cmd.Parameters.AddWithValue("@statusID", appRej + 1);
+                cmd.Parameters.AddWithValue("@transID",transfer);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+
 
         public Transfer RequestTransfer(int fromId, int toId, decimal amount)
         {
@@ -460,9 +514,9 @@ namespace TenmoServer.DAO
             transfer.Amount = Convert.ToDecimal(reader["amount"]);
             return transfer;
         }
-        private string getStatusStringFromInt (int status)
-            {
-                string result ="";
+        private string getStatusStringFromInt(int status)
+        {
+            string result = "";
             result = status switch
             {
                 1 => "Pending",

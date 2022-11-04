@@ -69,13 +69,20 @@ namespace TenmoServer.Controllers
 
 
         [HttpPost("SendMoney")]
-
         public void PostTransfer(transfere_request transfere)
         {
-            _transferDao.SendTransfer(transfere.sender_Id, transfere.target_Id, transfere._amount);
+            _transferDao.SendTransfer(transfere.sender_Id, transfere.target_Id, transfere._amount,transfere.IsThisASend);
              
         }
 
+
+
+        // public void ApproveReject(Transfer _Transfer, int _AppRej)
+        [HttpPost("AppRej")]
+        public void ApproveReject(TransferAppRej transferApp)
+        {
+            _transferDao.ChangeTransferStatus(transferApp.Trans_id, transferApp.Action_id);
+        }
 
     }
 }
