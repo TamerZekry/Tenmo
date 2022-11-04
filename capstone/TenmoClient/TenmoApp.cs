@@ -118,9 +118,6 @@ namespace TenmoClient
                     goto enterMoney;
                 }
                 //call   transfer
-
-
-
                 tenmoApiService.TransferPay(tenmoApiService.UserId, userIdtoSendMonyTo, AmountOfMoneytoBeSend);
 
 

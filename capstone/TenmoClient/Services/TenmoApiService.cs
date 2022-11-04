@@ -25,7 +25,7 @@ namespace TenmoClient.Services
         {
             IRestClient clint = TenmoApiService.client;
             RestRequest request = new RestRequest($"balance/{id}");
-         //   request.AddObject(obj)
+         
             IRestResponse response = client.Get(request);
             return decimal.Parse(response.Content);
 
@@ -64,36 +64,20 @@ namespace TenmoClient.Services
         }
 
 
-        //public void TransferPay(int senderId, int targetId, decimal amount)
-        //{
-        //    //int senderId, int targetId, int amount
-        //    RestRequest request = new RestRequest($"transfer/pay");
-        //    request.AddObject( new { senderId = senderId, taregetId = targetId, amount = amount });
-        //    IRestResponse  response = client.Post(request);
-        //    var ppp = "ddfdf";
-        //    if (!response.IsSuccessful)
-        //    {
-        //        // request failed.
-        //    }
-        //}
+         
 
 
         public void TransferPay(int senderId, int targetId, decimal amount)
         {
-            //int senderId, int targetId, int amount
+            
             RestRequest request = new RestRequest($"transfer/SendMoney");
-
-
-
             request.AddJsonBody(new transfere_request(senderId,  targetId,  amount));
             request.AddHeader("Content-Type", "application/json");
-
             IRestResponse response = client.Post(request);
-           
-            if (!response.IsSuccessful)
-            {
-                // request failed.
-            }
+            //if (!response.IsSuccessful)
+            //{
+            //    return BadRequest()// request failed.
+            //}
         }
 
 
