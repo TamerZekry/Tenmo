@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ShredClasses\ShredClasses.csproj" />
+    <ProjectReference Include="..\ShredClasses\shared.csproj" />
   </ItemGroup>
 
 </Project>

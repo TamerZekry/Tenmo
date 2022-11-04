@@ -134,6 +134,32 @@ namespace TenmoServer.DAO
             }
 
         }
+        public decimal GetBalanceByAccount(int _account)
+        {
+            decimal _balance = 00;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("SELECT balance FROM tenmo_user ,account WHERE tenmo_user.user_id = account.user_id AND account.account_id = @id;", conn);
+                    cmd.Parameters.AddWithValue("@id", _account);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        _balance = Convert.ToDecimal(reader["balance"]);
+                    }
+                    return _balance;
+                }
+            }
+            catch (SqlException)
+            {
+                throw;
+            }
+
+        }
 
         private User GetUserFromReader(SqlDataReader reader)
         {
@@ -147,8 +173,6 @@ namespace TenmoServer.DAO
 
             return u;
         }
-
-
 
         public int GetAccountId(int UserId)
         {
@@ -178,6 +202,33 @@ namespace TenmoServer.DAO
             }
 
         }
-    }
-    }
 
+        public string GetUsernameByAcount(int _account)
+        {
+            string result = null;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand("SELECT username FROM tenmo_user ,account WHERE tenmo_user.user_id = account.user_id AND account.account_id = @id; ", conn);
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        result = Convert.ToString(reader["username"]);
+                    }
+                    return result;
+                }
+            }
+            catch (SqlException)
+            {
+                throw;
+            }
+
+        }
+    }
+    }
