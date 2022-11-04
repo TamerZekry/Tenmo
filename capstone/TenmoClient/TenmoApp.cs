@@ -134,20 +134,27 @@ namespace TenmoClient
                
               var  PendingTransfers = (from x in  tenmoApiService.GetAllTransfersForUser() where x.Status == "Pending"  select x).ToList<Transfer>() ;
                 Console.WriteLine($"Transfers Count: {PendingTransfers.Count}");
-                foreach (var item in PendingTransfers) // placeholder see README for desired result. (USE CASE: 5)
+
+                var userNameLookup = new Dictionary<int, string>();
+                int userAccountId = tenmoApiService.GetAccountById(tenmoApiService.UserId);
+                userNameLookup[userAccountId] = tenmoApiService.Username;
+
+                foreach (Transfer t in PendingTransfers)
                 {
-                    Console.WriteLine($"Id: {item.Id}");
-                    Console.WriteLine($"Type: {item.Type}");
-                    Console.WriteLine($"From: {item.From}");
-                    Console.WriteLine($"To: {item.To}");
-                    Console.WriteLine($"Amount: {item.Amount}");
-                    Console.WriteLine($"Status: {item.Status}");
-                    Console.WriteLine("------------------------");
+                    int otherAccountId = (t.To != userAccountId ? t.To : t.From);
+                    if (!userNameLookup.ContainsKey(otherAccountId))
+                    {
+                        userNameLookup[otherAccountId] = tenmoApiService.GetUserByAccountId(otherAccountId).Username;
+                    }
                 }
-               
+                console.PrintPendingTransferMenu(PendingTransfers, userNameLookup);
             // CHOOSE THE TRANSFER
             enterTransferID:
-                int transferId = console.PromptForInteger("Enter transfers ID ");
+                int transferId = console.PromptForInteger("Please enter transfer ID to approve/reject (0 to cancel)");
+                if(transferId == 0)
+                {
+                    return true;
+                }
                 if ((PendingTransfers.FirstOrDefault(x=>x.Id == transferId)) == null)
                 {
                     console.PrintError("Please choose Id for the list");
