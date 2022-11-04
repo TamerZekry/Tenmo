@@ -97,7 +97,7 @@ namespace TenmoClient.Services
             return loginUser;
         }
 
-        internal void PrintTransferDetails(Transfer transfer, Dictionary<int, string> usernameLookup)
+        public void PrintTransferDetails(Transfer transfer, Dictionary<int, string> usernameLookup)
         {
             Console.WriteLine("--------------------------------------------");
             Console.WriteLine("Transfer");
@@ -109,6 +109,28 @@ namespace TenmoClient.Services
             Console.WriteLine($"Status: {transfer.Status}");
             Console.WriteLine($"Amount: {transfer.Amount}");
             Pause();
+        }
+
+        public void PrintPendingTransferMenu(List<Transfer> pendingTransfers, Dictionary<int, string> userNameLookup)
+        {
+            Console.WriteLine("-------------------------------------------");
+            Console.WriteLine("Pending Transfers");
+            Console.WriteLine("ID          To                     Amount");
+            Console.WriteLine("-------------------------------------------");
+
+            foreach(var transfer in pendingTransfers)
+            {
+                Console.WriteLine($"{transfer.Id,-8}{userNameLookup[transfer.From],-16}{transfer.Amount:C}");
+            }
+
+            Console.WriteLine("---------");
+        }
+
+        public void PrintTransferAprovalMenu()
+        {
+            Console.WriteLine("1: Approve");
+            Console.WriteLine("2: Reject");
+            Console.WriteLine("0: Don't approve or reject");
         }
 
         // Add application-specific UI methods here...

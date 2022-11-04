@@ -85,6 +85,7 @@ namespace TenmoClient
                 var transferList = tenmoApiService.GetAllTransfersForUser();
                 int userAccountId = tenmoApiService.GetAccountById(tenmoApiService.UserId);
                 userNameLookup[userAccountId] = tenmoApiService.Username;
+
                 foreach (Transfer t in transferList)
                 {
                     int otherAccountId = (t.To != userAccountId ? t.To : t.From);
@@ -128,7 +129,50 @@ namespace TenmoClient
 
             if (menuSelection == 3)
             {
-                // View your pending requests
+                var pendingTransfers = tenmoApiService.GetPendingTransfersForUser();
+                var userNameLookup = new Dictionary<int, string>();
+                int userAccountId = tenmoApiService.GetAccountById(tenmoApiService.UserId);
+
+                foreach (Transfer t in pendingTransfers)
+                {
+                    int otherAccountId = (t.To != userAccountId ? t.To : t.From);
+                    if (!userNameLookup.ContainsKey(otherAccountId))
+                    {
+                        userNameLookup[otherAccountId] = tenmoApiService.GetUserByAccountId(otherAccountId).Username;
+                    }
+
+                }
+                console.PrintPendingTransferMenu(pendingTransfers, userNameLookup);
+                int transferId = -1;
+                do
+                {
+                    transferId = console.PromptForInteger("Please enter transfer ID to approve/reject (0 to cancel)");
+
+                    if(pendingTransfers.Where((t) => t.Id == transferId).Any() == false)
+                    {
+                        transferId = -1;
+                        console.PrintError("Please select a valid transfer Id.");
+                    }
+                    else if (transferId == 0)
+                    {
+                        break;
+                    }
+                }
+                while (transferId == -1);
+
+                if (transferId != 0)
+                {
+                    console.PrintTransferAprovalMenu();
+                    int selectionId = console.PromptForInteger("Please choose an option", 0, 2);
+                    if(selectionId == 1)
+                    {
+                        //approve transfer
+                    }
+                    else if(selectionId == 2)
+                    {
+                        //deny transfer
+                    }
+                }
             }
 
             if (menuSelection == 4)

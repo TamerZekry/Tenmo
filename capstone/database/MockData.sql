@@ -16,7 +16,17 @@ INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, accoun
 VALUES
 (2, 2, 2002, 2001, 999),
 (2, 2, 2001, 2002, 999),
-(2, 2, 2003, 2001, 50);
+(2, 2, 2003, 2001, 50),
+(1, 1, 2002, 2001, 100);
+
+
+
+SELECT transfer.* FROM transfer
+                JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id
+                JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id 
+                JOIN account ON transfer.account_to = account.account_id
+                JOIN tenmo_user ON tenmo_user.user_id = account.account_id 
+                WHERE account.account_id = 2001 AND transfer.transfer_status_id = 1;
 
 
 SELECT transfer_id, account_from, account_to, transfer_type_desc, transfer_status_desc, amount FROM transfer
