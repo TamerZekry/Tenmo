@@ -54,5 +54,14 @@ namespace TenmoClient.Services
         // Add application-specific UI methods here...
 
 
+        public void PrintApproveOrReject()
+        {
+            Console.WriteLine("1: Approve");
+            Console.WriteLine("2: Reject");
+            Console.WriteLine("0: Don't approve or reject");
+        }
+
+
+
     }
 }

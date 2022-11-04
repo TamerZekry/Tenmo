@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TenmoServer.Models;
 using TenmoServer.DAO;
 using Microsoft.AspNetCore.Authorization;
+using ShredClasses;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -59,11 +60,30 @@ namespace TenmoServer.Controllers
         {
             _transferDao.RequestTransfer(senderId, targetId, amount);
         }
-        [HttpPost("pay")]
-        
-        public void PostTransfer(int senderId, int targetId, decimal amount)
+        //[HttpPost("pay")]
+
+        //public void PostTransfer(int senderId, int targetId, decimal amount)
+        //{
+        //    _transferDao.SendTransfer(senderId, targetId, amount);
+        //}
+
+
+        [HttpPost("SendMoney")]
+        public void PostTransfer(transfere_request transfere)
         {
-            _transferDao.SendTransfer(senderId, targetId, amount);
+            _transferDao.SendTransfer(transfere.sender_Id, transfere.target_Id, transfere._amount,transfere.IsThisASend);
+             
         }
+
+
+
+        // public void ApproveReject(Transfer _Transfer, int _AppRej)
+        [HttpPost("AppRej")]
+        public void ApproveReject(TransferAppRej transferApp)
+        {
+            _transferDao.ChangeTransferStatus(transferApp.Trans_id, transferApp.Action_id);
+        }
+
     }
 }
+ 
