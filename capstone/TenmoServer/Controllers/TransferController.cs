@@ -57,13 +57,13 @@ namespace TenmoServer.Controllers
 
         public void PostTransferRequest(int senderId, int targetId, decimal amount)
         {
-            _transferDao.RequestTransfer(senderId, targetId, amount, false);
+            _transferDao.RequestTransfer(senderId, targetId, amount);
         }
         [HttpPost("pay")]
         
         public void PostTransfer(int senderId, int targetId, decimal amount)
         {
-            _transferDao.RequestTransfer(senderId, targetId, amount, true);
+            _transferDao.SendTransfer(senderId, targetId, amount);
         }
     }
 }

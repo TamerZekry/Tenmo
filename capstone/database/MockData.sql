@@ -51,7 +51,7 @@ WHERE transfer.account_from = account.account_id OR transfer.account_to = accoun
 
 BEGIN TRANSACTION;
 
-SELECT * FROM account JOIN tenmo_user on account.user_id = tenmo_user.user_id;
+SELECT account.account_id, account.user_id, account.balance FROM account JOIN tenmo_user on account.user_id = tenmo_user.user_id;
 SELECT * FROM transfer;
 
 UPDATE account SET balance = 1500 WHERE account_id = 2001;
