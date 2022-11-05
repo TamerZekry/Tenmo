@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TenmoServer", "TenmoServer\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TenmoClient", "TenmoClient\TenmoClient.csproj", "{C70367C0-8E0C-4766-A35A-64BD3D08E940}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShredClasses", "ShredClasses\ShredClasses.csproj", "{3A97924F-D875-41E8-B248-11907DB7F6D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "shared", "ShredClasses\shared.csproj", "{3A97924F-D875-41E8-B248-11907DB7F6D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
