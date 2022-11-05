@@ -46,7 +46,8 @@ namespace TenmoServer
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    NameClaimType = "name"
+                    NameClaimType = "name" 
+                    
                 };
             });
 

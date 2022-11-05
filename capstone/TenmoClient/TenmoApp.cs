@@ -16,6 +16,7 @@ namespace TenmoClient
         public TenmoApp(string apiUrl)
         {
             tenmoApiService = new TenmoApiService(apiUrl);
+            
         }
 
         public void Run()
