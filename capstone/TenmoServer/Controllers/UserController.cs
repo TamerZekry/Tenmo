@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TenmoServer.DAO;
 using TenmoServer.Models;
 
@@ -21,27 +18,22 @@ namespace TenmoServer.Controllers
             _userDao = userDao;
         }
 
-        
+
         /// <summary>
         /// return a List of users at endpoint  apiUrl/user
         /// apiUrl = "https://localhost:44315/";
         /// </summary>
         /// <returns></returns>
         [HttpGet("")]
-        public ActionResult<List<User>>  Get()
+        public ActionResult<List<User>> Get()
         {
-            return _userDao.GetUsers(); 
-        }
-        [HttpGet("{id}")]
-        public ActionResult<User> GetUser(int id)
-        {
-            return _userDao.GetUserById(id);
+            return _userDao.GetUsers();
         }
 
-        [HttpGet("account/{accountId}")]
-        public ActionResult<User> GetUserByAccountId(int accountId)
+        [HttpGet("username/account/{accountId}")]
+        public ActionResult<string> GetUsernameByAccountId(int accountId)
         {
-            return _userDao.GetUserByAccountId(accountId);
+            return _userDao.GetUsernameByAcount(accountId);
         }
     }
 }

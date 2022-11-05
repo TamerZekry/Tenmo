@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using shared;
 using TenmoServer.DAO;
-using TenmoServer.Models;
 
 namespace TenmoServer.Controllers
 {
@@ -29,8 +24,15 @@ namespace TenmoServer.Controllers
         [HttpGet("{id}")]
         [Authorize]
         public decimal GetUserBalance(int id)
-{
-            return _userDao.GetUserBalanceById(id);
+        {
+            if (!htua.IsAuthrizedUser(HttpContext, id))
+            {
+                return 0;
+            }
+            else
+            {
+                return _userDao.GetUserBalanceById(id);
+            }
         }
 
         [HttpGet("account/{id}")]

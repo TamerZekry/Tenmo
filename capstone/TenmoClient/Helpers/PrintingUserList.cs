@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using TenmoClient.Models;
 
 namespace TenmoClient.Helpers
 {
-   public static class PrintingUserList
+    public static class PrintingUserList
     {
         public static void PrintUsers(List<User> users)
         {

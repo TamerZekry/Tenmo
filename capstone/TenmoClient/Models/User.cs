@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TenmoClient.Models
+﻿namespace TenmoClient.Models
 {
     public class User
     {

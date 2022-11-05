@@ -18,7 +18,6 @@ namespace TenmoClient.Services
                 return (user == null) ? 0 : user.UserId;
             }
         }
-
         public string Username
         {
             get
@@ -53,7 +52,7 @@ namespace TenmoClient.Services
             return true;
         }
 
-        public ApiUser Login(LoginUser loginUser)
+        public virtual ApiUser Login(LoginUser loginUser)
         {
             RestRequest request = new RestRequest("login");
             request.AddJsonBody(loginUser);
@@ -65,7 +64,7 @@ namespace TenmoClient.Services
             return response.Data;
         }
 
-        public void Logout()
+        public virtual void Logout()
         {
             user = new ApiUser();
             client.Authenticator = null;

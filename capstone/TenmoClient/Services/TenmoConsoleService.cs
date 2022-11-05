@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TenmoClient.Models;
 
 namespace TenmoClient.Services
@@ -35,24 +36,6 @@ namespace TenmoClient.Services
             Console.WriteLine("---------");
         }
 
-        public void PrintTransfer(Transfer transfer, int accountId, string otherUsername)
-        {
-            string toUsername = string.Empty;
-            string fromUsername = string.Empty;
-
-            string type = "";
-            if (transfer.To == accountId)
-            {
-                otherUsername = fromUsername;
-                type = "From";
-            }
-            else
-            {
-                otherUsername = toUsername;
-                type = "To";
-            }
-            Console.WriteLine($"{transfer.Id} {type}: {otherUsername} {transfer.Amount:C}");
-        }
         public void PrintViewTransfersMenu(List<Transfer> transfers, int accountId, Dictionary<int, string> userNameLookup)
         {
             Console.WriteLine("Transfers");
@@ -60,11 +43,12 @@ namespace TenmoClient.Services
             Console.WriteLine("Id          From/To                 Amount");
             Console.WriteLine("-------------------------------------------");
 
-            string otherUsername = string.Empty;
+            string otherUsername;
+            string type;
+
             foreach (var transfer in transfers)
             {
-                string type = "";
-                if(transfer.To == accountId)
+                if (transfer.To == accountId)
                 {
                     otherUsername = userNameLookup[transfer.From];
                     type = "From";
@@ -72,9 +56,9 @@ namespace TenmoClient.Services
                 else
                 {
                     otherUsername = userNameLookup[transfer.To];
-                    type = "To";
+                    type = "  To";
                 }
-                Console.WriteLine($"{transfer.Id, -12} {type}: {otherUsername, -15} {transfer.Amount:C}");
+                Console.WriteLine($"{transfer.Id,-12} {type}: {otherUsername,-15} {transfer.Amount:C}");
             }
             Console.WriteLine("--------");
         }
@@ -94,6 +78,29 @@ namespace TenmoClient.Services
                 Password = password
             };
             return loginUser;
+        }
+
+        public Transfer PromptForTransfer(List<Transfer> transfersList, string message)
+        {
+            Transfer selectedTransfer = null;
+
+            do
+            {
+                int selectedId = PromptForInteger(message);
+                if (selectedId == 0)
+                {
+                    break;
+                }
+
+                selectedTransfer = transfersList.FirstOrDefault((t => t.Id == selectedId));
+                if (selectedTransfer == null)
+                {
+                    PrintError("Please select a valid transfer Id");
+                }
+            }
+            while (selectedTransfer == null);
+
+            return selectedTransfer;
         }
 
         public void PrintTransferDetails(Transfer transfer, Dictionary<int, string> usernameLookup)
@@ -117,17 +124,12 @@ namespace TenmoClient.Services
             Console.WriteLine("ID          To                     Amount");
             Console.WriteLine("-------------------------------------------");
 
-            foreach(var transfer in pendingTransfers)
+            foreach (var transfer in pendingTransfers)
             {
-                Console.WriteLine($"{transfer.Id,-8}{userNameLookup[transfer.From],-16}{transfer.Amount:C}");
+                Console.WriteLine($"{transfer.Id,-8}{userNameLookup[transfer.To],-16}{transfer.Amount:C}");
             }
 
             Console.WriteLine("---------");
-        }
-
-        public void PrintPendingTransferMenu()
-        {
-            throw new NotImplementedException();
         }
 
         public void PrintApproveOrReject()

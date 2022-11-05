@@ -1,22 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using TenmoServer.Models;
-using TenmoServer.DAO;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ShredClasses;
-
+using System.Collections.Generic;
+using TenmoServer.DAO;
+using TenmoServer.Models;
+using shared;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TenmoServer.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class TransferController : ControllerBase
     {
-
         private readonly ITransferDao _transferDao;
         private readonly IUserDao _userDao;
 
@@ -26,64 +23,64 @@ namespace TenmoServer.Controllers
             _userDao = userDao;
         }
 
-        // TODO: GET List of past transactions from user
-        [HttpGet("{userId}")]
-        [Authorize]
-        public ActionResult<List<Transfer>> GetTransfers(int userId)
-        {
-            var user =_userDao.GetUser(User.Identity.Name);
-            if(user == null || userId != user.UserId) 
-            {
-                return Forbid();
-            }
-            return _transferDao.GetTransfersForUser(userId);
-        }
         [HttpGet("pending/{transferId}")]
-        public ActionResult<IEnumerable<Transfer>> GetPendingTransfers(int transferId)
+        public ActionResult<IEnumerable<Transfer>> GetPendingTransfers(int userId)
         {
-            return _transferDao.GetPendingTransfers(transferId);
+            if (htua.IsAuthrizedUser(HttpContext, userId))
+            {
+                return _transferDao.GetPendingTransfers(userId);
+            }
+
+            return Forbid();
         }
 
         [HttpGet("user/{userId}")]
         public ActionResult<IEnumerable<Transfer>> GetTransfersByUser(int userId)
         {
-            return _transferDao.GetTransfersForUser(userId);
+            if(htua.IsAuthrizedUser(HttpContext, userId))
+            {
+                return _transferDao.GetTransfersForUser(userId);
+            }
+            return Forbid();
         }
-        [HttpGet("{transferId}")]
-        public ActionResult<Transfer> GetTransferById(int transferId)
-        {
-            return _transferDao.GetTransferById(transferId);
-        }
+
         [HttpPost("request")]
-
-        public void PostTransferRequest(int senderId, int targetId, decimal amount)
+        public ActionResult PostTransferRequest(int senderId, int targetId, decimal amount) // i dont think this is used, but its like 2AM so its staying!
         {
-            _transferDao.RequestTransfer(senderId, targetId, amount);
+            if(htua.IsAuthrizedUser(HttpContext, senderId))
+            {
+                _transferDao.RequestTransfer(senderId, targetId, amount);
+                return Ok();
+            }
+            return Forbid();
         }
-        //[HttpPost("pay")]
-
-        //public void PostTransfer(int senderId, int targetId, decimal amount)
-        //{
-        //    _transferDao.SendTransfer(senderId, targetId, amount);
-        //}
-
 
         [HttpPost("SendMoney")]
-        public void PostTransfer(transfere_request transfere)
+        public ActionResult PostTransfer(transfere_request transfere)
         {
-            _transferDao.SendTransfer(transfere.sender_Id, transfere.target_Id, transfere._amount,transfere.IsThisASend);
-             
+            if(transfere.sender_Id == transfere.target_Id || transfere._amount <= 0 || !htua.IsAuthrizedUser(HttpContext, transfere.sender_Id))
+            {
+                // hello fellow traveler! wondering why this is here?
+                // If you bypass the client theres no check for sending to your self and it WILL take down the server if called.
+                // If you put in a negitive amount you will also Crash the server atleast theres a check in the DB or you could steal money!!
+                return Forbid();
+            }
+            _transferDao.SendTransfer(transfere.sender_Id, transfere.target_Id, transfere._amount, transfere.IsThisASend);
+            return Ok();
         }
 
-
-
-        // public void ApproveReject(Transfer _Transfer, int _AppRej)
         [HttpPost("AppRej")]
         public ActionResult<bool> ApproveReject(TransferAppRej transferApp)
         {
-          return   _transferDao.ChangeTransferStatus(transferApp.Trans_id, transferApp.Action_id);
+            // if you bypass the client you can set any of your own transfers to any state.
+            // we need to get the transfer and check to make sure its actually still pending here still before doing anything.
+            // if not you should be forbiden from altering its state.
+            if(_transferDao.GetTransferById(transferApp.Trans_id).Status == "Pending" && htua.IsAuthrizedUser(HttpContext, transferApp.SenderId))
+            {
+                return _transferDao.ChangeTransferStatus(transferApp.Trans_id, transferApp.Action_id);
+            }
+            return Forbid();
         }
 
     }
 }
- 

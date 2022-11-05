@@ -45,34 +45,6 @@ namespace TenmoServer.DAO
             return returnUser;
         }
 
-        public User GetUserById(int userId)
-        {
-            User returnUser = null;
-
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-
-                    SqlCommand cmd = new SqlCommand("SELECT user_id, username, password_hash, salt FROM tenmo_user WHERE user_id = @userId", conn);
-                    cmd.Parameters.AddWithValue("@userId", userId);
-                    SqlDataReader reader = cmd.ExecuteReader();
-
-                    if (reader.Read())
-                    {
-                        returnUser = GetUserFromReader(reader);
-                    }
-                }
-            }
-            catch (SqlException)
-            {
-                throw;
-            }
-
-            return returnUser;
-        }
-
         public List<User> GetUsers()
         {
             List<User> returnUsers = new List<User>();
@@ -88,7 +60,7 @@ namespace TenmoServer.DAO
 
                     while (reader.Read())
                     {
-                        User u = GetUserFromReader(reader);
+                        User u = GetSanitizedUserFromReader(reader);
                         returnUsers.Add(u);
                     }
                 }
@@ -146,7 +118,7 @@ namespace TenmoServer.DAO
 
                     SqlCommand cmd = new SqlCommand("SELECT * FROM tenmo_user ,account WHERE tenmo_user.user_id = account.user_id AND tenmo_user.user_id = @id;", conn);
                     cmd.Parameters.AddWithValue("@id", id);
-                    
+
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     if (reader.Read())
@@ -201,6 +173,16 @@ namespace TenmoServer.DAO
 
             return u;
         }
+        private User GetSanitizedUserFromReader(SqlDataReader reader)
+        {
+            User u = new User()
+            {
+                UserId = Convert.ToInt32(reader["user_id"]),
+                Username = Convert.ToString(reader["username"])
+            };
+
+            return u;
+        }
 
         public int GetAccountId(int UserId)
         {
@@ -241,7 +223,7 @@ namespace TenmoServer.DAO
                     conn.Open();
 
                     SqlCommand cmd = new SqlCommand("SELECT username FROM tenmo_user ,account WHERE tenmo_user.user_id = account.user_id AND account.account_id = @id; ", conn);
-                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@id", _account);
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
@@ -257,29 +239,6 @@ namespace TenmoServer.DAO
                 throw;
             }
 
-        }
-    }
-    }
-        public User GetUserByAccountId(int accountId)
-        {
-            using(SqlConnection conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand(
-                    "SELECT * FROM tenmo_user " +
-                    "JOIN account ON tenmo_user.user_id = account.user_id " +
-                    "WHERE account_id = @accountId", conn);
-                cmd.Parameters.AddWithValue("@accountId", accountId);
-
-                SqlDataReader reader = cmd.ExecuteReader();
-                User user = null;
-                if (reader.Read())
-                {
-                    user = GetUserFromReader(reader);
-                }
-
-                return user;
-            }
         }
     }
  }

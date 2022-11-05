@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using TenmoServer.Models;
 
 namespace TenmoServer.DAO
@@ -56,7 +53,7 @@ namespace TenmoServer.DAO
             return transferList;
         }
 
-        public Transfer GetTransferById(int id) 
+        public Transfer GetTransferById(int id)
         {
             Transfer transfer = new Transfer();
 
@@ -327,8 +324,8 @@ namespace TenmoServer.DAO
             }
             return true;
         }
-      
-        
+
+
         /// <summary>
         ///  Sending or requesting money Transfer
         /// </summary>
@@ -380,7 +377,7 @@ namespace TenmoServer.DAO
                     COMMIT;";
                     SqlCommand sqlCommand = new SqlCommand(commandString, conn);
                     sqlCommand.Parameters.AddWithValue("@Amount", amount);
-                    sqlCommand.Parameters.AddWithValue("@Sender_ID", _userDao.GetAccountId( toId ));
+                    sqlCommand.Parameters.AddWithValue("@Sender_ID", _userDao.GetAccountId(toId));
                     sqlCommand.Parameters.AddWithValue("@Reciever_ID", _userDao.GetAccountId(fromId));
 
                     SqlDataReader reader = sqlCommand.ExecuteReader();
@@ -417,7 +414,7 @@ namespace TenmoServer.DAO
                1: Approve
                2: Reject
             */
-           
+
             if (appRej == 2) { return true; }
             else
             {
@@ -442,7 +439,7 @@ namespace TenmoServer.DAO
                 }
                 else
                 {
-                    
+
                     return false;
                 }
             }
@@ -451,7 +448,7 @@ namespace TenmoServer.DAO
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(@"UPDATE transfer set transfer_status_id = @statusID WHERE transfer_id = @transID;", conn);
                 cmd.Parameters.AddWithValue("@statusID", appRej + 1);
-                cmd.Parameters.AddWithValue("@transID",transfer_id);
+                cmd.Parameters.AddWithValue("@transID", transfer_id);
                 cmd.ExecuteNonQuery();
             }
             return true;
@@ -543,7 +540,7 @@ namespace TenmoServer.DAO
 
             return cmd;
         }
-       
+
         private Transfer CreateTransferFromReader(SqlDataReader reader)
         {
             Transfer transfer = new Transfer();
@@ -553,7 +550,7 @@ namespace TenmoServer.DAO
 
             transfer.Type = Convert.ToInt32(reader["transfer_type_id"]) == 1 ? "Request" : "Send";
             transfer.Status = getStatusStringFromInt(Convert.ToInt32(reader["transfer_status_id"]));
-         
+
             transfer.Amount = Convert.ToDecimal(reader["amount"]);
             return transfer;
         }
