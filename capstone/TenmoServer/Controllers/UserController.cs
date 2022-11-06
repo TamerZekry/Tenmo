@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using TenmoServer.DAO;
@@ -9,6 +10,7 @@ namespace TenmoServer.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserDao _userDao;
@@ -17,7 +19,6 @@ namespace TenmoServer.Controllers
         {
             _userDao = userDao;
         }
-
 
         /// <summary>
         /// return a List of users at endpoint  apiUrl/user

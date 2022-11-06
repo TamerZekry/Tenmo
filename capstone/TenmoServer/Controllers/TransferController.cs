@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using shared;
 using ShredClasses;
 using System.Collections.Generic;
 using TenmoServer.DAO;
 using TenmoServer.Models;
-using shared;
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
 
 namespace TenmoServer.Controllers
 {
@@ -37,28 +37,18 @@ namespace TenmoServer.Controllers
         [HttpGet("user/{userId}")]
         public ActionResult<IEnumerable<Transfer>> GetTransfersByUser(int userId)
         {
-            if(htua.IsAuthrizedUser(HttpContext, userId))
+            if (htua.IsAuthrizedUser(HttpContext, userId))
             {
                 return _transferDao.GetTransfersForUser(userId);
             }
             return Forbid();
         }
 
-        [HttpPost("request")]
-        public ActionResult PostTransferRequest(int senderId, int targetId, decimal amount) // i dont think this is used, but its like 2AM so its staying!
-        {
-            if(htua.IsAuthrizedUser(HttpContext, senderId))
-            {
-                _transferDao.RequestTransfer(senderId, targetId, amount);
-                return Ok();
-            }
-            return Forbid();
-        }
 
         [HttpPost("SendMoney")]
         public ActionResult PostTransfer(transfere_request transfere)
         {
-            if(transfere.sender_Id == transfere.target_Id || transfere._amount <= 0 || !htua.IsAuthrizedUser(HttpContext, transfere.sender_Id))
+            if (transfere.sender_Id == transfere.target_Id || transfere._amount <= 0 || !htua.IsAuthrizedUser(HttpContext, transfere.sender_Id))
             {
                 // hello fellow traveler! wondering why this is here?
                 // If you bypass the client theres no check for sending to your self and it WILL take down the server if called.
@@ -75,7 +65,7 @@ namespace TenmoServer.Controllers
             // if you bypass the client you can set any of your own transfers to any state.
             // we need to get the transfer and check to make sure its actually still pending here still before doing anything.
             // if not you should be forbiden from altering its state.
-            if(_transferDao.GetTransferById(transferApp.Trans_id).Status == "Pending" && htua.IsAuthrizedUser(HttpContext, transferApp.SenderId))
+            if (_transferDao.GetTransferById(transferApp.Trans_id).Status == "Pending" && htua.IsAuthrizedUser(HttpContext, transferApp.SenderId))
             {
                 return _transferDao.ChangeTransferStatus(transferApp.Trans_id, transferApp.Action_id);
             }

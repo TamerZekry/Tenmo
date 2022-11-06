@@ -7,6 +7,7 @@ namespace TenmoServer.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class BalanceController : ControllerBase
     {
         private readonly IUserDao _userDao;
@@ -17,27 +18,32 @@ namespace TenmoServer.Controllers
         }
 
         /// <summary>
-        /// return the balance of a user given the user id   at endpoint  apiUrl/balance/id
+        /// return the balance of a user given the user id  at endpoint  apiUrl/balance/id
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">User Id</param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [Authorize]
-        public decimal GetUserBalance(int id)
+        public ActionResult<decimal> GetUserBalance(int id)
         {
             if (!htua.IsAuthrizedUser(HttpContext, id))
             {
-                return 0;
+                return Forbid();
             }
-            else
-            {
-                return _userDao.GetUserBalanceById(id);
-            }
+            return _userDao.GetUserBalanceById(id);
         }
 
+        /// <summary>
+        /// return Account ID by passing User ID
+        /// </summary>
+        /// <param name="id">User Id</param>
+        /// <returns></returns>
         [HttpGet("account/{id}")]
-        public int GET(int id)
+        public ActionResult<int> GET(int id)
         {
+            if (!htua.IsAuthrizedUser(HttpContext, id))
+            {
+                return Forbid();
+            }
             return _userDao.GetAccountId(id);
         }
     }

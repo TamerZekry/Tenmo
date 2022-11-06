@@ -15,7 +15,6 @@ namespace TenmoClient
         public TenmoApp(string apiUrl)
         {
             tenmoApiService = new TenmoApiService(apiUrl);
-            
         }
 
         public void Run()
@@ -91,7 +90,7 @@ namespace TenmoClient
                     accountId: tenmoApiService.UserAccountId,
                     userNameLookup: accountIdToUsernameLookup);
 
-                if(transfersList.Count > 0)
+                if (transfersList.Count > 0)
                 {
                     Transfer selectedTransfer = console.PromptForTransfer(transfersList, "Please enter transfer ID to view details (0 to cancel)");
 
@@ -104,7 +103,6 @@ namespace TenmoClient
                 {
                     console.Pause("No transfers. (press any key)");
                 }
-                
 
             }
 
@@ -120,7 +118,7 @@ namespace TenmoClient
                 if (pendingTransfers.Count > 0)
                 {
                     Transfer transferToBechanged = console.PromptForTransfer(pendingTransfers, "Please enter transfer ID to approve/reject (0 to cancel)");
-                    if(transferToBechanged == null)
+                    if (transferToBechanged == null)
                     {
                         return true;
                     }
@@ -180,7 +178,6 @@ namespace TenmoClient
                 //call   transfer send money 
                 tenmoApiService.TransferPay(tenmoApiService.UserId, userIdtoSendMonyTo, amountOfMoneytoBeSend, true);
 
-
                 console.Pause();
             }
 
@@ -190,7 +187,7 @@ namespace TenmoClient
                 PrintingUserList.PrintUsers(users);
             enterID2:
                 int userIdtoToRequestMoneyFrom = console.PromptForInteger("Enter user ID to send to (0 to cancel)");
-                if(userIdtoToRequestMoneyFrom == 0)
+                if (userIdtoToRequestMoneyFrom == 0)
                 {
                     return true;
                 }
@@ -199,19 +196,26 @@ namespace TenmoClient
                     console.PrintError("You can't request money from your self");
                     goto enterID2;
                 }
-                if(!users.Any((user) => user.UserId == userIdtoToRequestMoneyFrom))
+                if (!users.Any((user) => user.UserId == userIdtoToRequestMoneyFrom))
                 {
                     console.PrintError("Please select a vaid user id.");
                     goto enterID2;
                 }
             enterMoney2:
-                decimal amountOfMoneytoBeRequested = console.PromptForDecimal("Enter amount of money");
+                decimal amountOfMoneytoBeRequested = console.PromptForDecimal("Enter amount of money (0 to cancel)");
                 if (TheChecker.LeftGreaterthe(0, amountOfMoneytoBeRequested))
                 {
                     console.PrintError("You can't send negative money");
+
                     goto enterMoney2;
                 }
+                if (amountOfMoneytoBeRequested == 0)
+                {
+                    return true;
+                }
+
                 tenmoApiService.TransferPay(tenmoApiService.UserId, userIdtoToRequestMoneyFrom, amountOfMoneytoBeRequested, false);
+                console.Pause();
             }
 
             if (menuSelection == 6)

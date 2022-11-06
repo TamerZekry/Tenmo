@@ -26,7 +26,6 @@ namespace TenmoServer.DAO
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-
                     SqlCommand cmd = new SqlCommand("SELECT user_id, username, password_hash, salt FROM tenmo_user WHERE username = @username", conn);
                     cmd.Parameters.AddWithValue("@username", username);
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -180,14 +179,11 @@ namespace TenmoServer.DAO
                 UserId = Convert.ToInt32(reader["user_id"]),
                 Username = Convert.ToString(reader["username"])
             };
-
             return u;
         }
 
         public int GetAccountId(int UserId)
         {
-            //SELECT account.account_id,tenmo_user.user_id             FROM account, tenmo_user WHERE account.user_id = tenmo_user.user_id AND tenmo_user.user_id = 1001
-
             int account = 0;
             try
             {
@@ -241,5 +237,5 @@ namespace TenmoServer.DAO
 
         }
     }
- }
+}
 
