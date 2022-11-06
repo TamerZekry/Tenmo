@@ -38,9 +38,9 @@ namespace TenmoClient.Services
 
         public void PrintViewTransfersMenu(List<Transfer> transfers, int accountId, Dictionary<int, string> userNameLookup)
         {
-            Console.WriteLine("Transfers");
+            Console.WriteLine("             Transfers");
             Console.WriteLine("-------------------------------------------");
-            Console.WriteLine("Id          From/To                 Amount");
+            Console.WriteLine("Id           From/To               Amount");
             Console.WriteLine("-------------------------------------------");
 
             string otherUsername;
@@ -56,7 +56,7 @@ namespace TenmoClient.Services
                 else
                 {
                     otherUsername = userNameLookup[transfer.To];
-                    type = "  To";
+                    type = "To  ";
                 }
                 Console.WriteLine($"{transfer.Id,-12} {type}: {otherUsername,-15} {transfer.Amount:C}");
             }
@@ -106,12 +106,12 @@ namespace TenmoClient.Services
         public void PrintTransferDetails(Transfer transfer, Dictionary<int, string> usernameLookup)
         {
             Console.WriteLine("--------------------------------------------");
-            Console.WriteLine("Transfer");
+            Console.WriteLine("Transfer Details");
             Console.WriteLine("--------------------------------------------");
-            Console.WriteLine($"Id: {transfer.Id}");
-            Console.WriteLine($"From: {usernameLookup[transfer.From]}");//wrong should be username.
-            Console.WriteLine($"To: {usernameLookup[transfer.To]}");//wrong should be username.
-            Console.WriteLine($"Type: {transfer.Type}");
+            Console.WriteLine($"Id    : {transfer.Id}");
+            Console.WriteLine($"From  : {usernameLookup[transfer.From]}");//wrong should be username.
+            Console.WriteLine($"To    : {usernameLookup[transfer.To]}");//wrong should be username.
+            Console.WriteLine($"Type  : {transfer.Type}");
             Console.WriteLine($"Status: {transfer.Status}");
             Console.WriteLine($"Amount: {transfer.Amount}");
             Pause();
@@ -121,12 +121,12 @@ namespace TenmoClient.Services
         {
             Console.WriteLine("-------------------------------------------");
             Console.WriteLine("Pending Transfers");
-            Console.WriteLine("ID          To                     Amount");
+            Console.WriteLine("ID            To                    Amount");
             Console.WriteLine("-------------------------------------------");
 
             foreach (var transfer in pendingTransfers)
             {
-                Console.WriteLine($"{transfer.Id,-8}{userNameLookup[transfer.To],-16}{transfer.Amount:C}");
+                Console.WriteLine($"{transfer.Id,-8}      {userNameLookup[transfer.To],-16}      {transfer.Amount:C}");
             }
 
             Console.WriteLine("---------");
