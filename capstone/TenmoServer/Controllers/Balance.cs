@@ -7,11 +7,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using TenmoServer.DAO;
 using TenmoServer.Models;
+using TenmoServer.Security;
 
 namespace TenmoServer.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class BalanceController : ControllerBase
     {
         private readonly IUserDao _userDao;
@@ -27,7 +29,7 @@ namespace TenmoServer.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [Authorize]
+        
         public decimal GetUserBalance(int id)
 {
             return _userDao.GetUserBalanceById(id);
@@ -36,6 +38,7 @@ namespace TenmoServer.Controllers
         [HttpGet("account/{id}")]
         public int GET(int id)
         {
+        
             return _userDao.GetAccountId(id);
         }
     }

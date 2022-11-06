@@ -14,6 +14,7 @@ namespace TenmoServer.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class TransferController : ControllerBase
     {
 

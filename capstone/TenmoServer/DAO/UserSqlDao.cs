@@ -146,7 +146,7 @@ namespace TenmoServer.DAO
 
                     SqlCommand cmd = new SqlCommand("SELECT * FROM tenmo_user ,account WHERE tenmo_user.user_id = account.user_id AND tenmo_user.user_id = @id;", conn);
                     cmd.Parameters.AddWithValue("@id", id);
-                    
+
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     if (reader.Read())
@@ -241,7 +241,7 @@ namespace TenmoServer.DAO
                     conn.Open();
 
                     SqlCommand cmd = new SqlCommand("SELECT username FROM tenmo_user ,account WHERE tenmo_user.user_id = account.user_id AND account.account_id = @id; ", conn);
-                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@id", _account);
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
@@ -258,11 +258,9 @@ namespace TenmoServer.DAO
             }
 
         }
-    }
-    }
         public User GetUserByAccountId(int accountId)
         {
-            using(SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(
@@ -282,5 +280,5 @@ namespace TenmoServer.DAO
             }
         }
     }
- }
+}
 
