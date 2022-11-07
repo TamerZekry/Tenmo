@@ -1,7 +1,7 @@
-﻿using System;
+﻿using shared.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using TenmoServer.Models;
 
 namespace TenmoServer.DAO
 {
@@ -222,11 +222,11 @@ namespace TenmoServer.DAO
             transfer.From = Convert.ToInt32(reader["account_from"]);
             transfer.To = Convert.ToInt32(reader["account_to"]);
             transfer.Type = Convert.ToInt32(reader["transfer_type_id"]) == 1 ? "Request" : "Send";
-            transfer.Status = getStatusStringFromInt(Convert.ToInt32(reader["transfer_status_id"]));
+            transfer.Status = GetStatusStringFromInt(Convert.ToInt32(reader["transfer_status_id"]));
             transfer.Amount = Convert.ToDecimal(reader["amount"]);
             return transfer;
         }
-        private string getStatusStringFromInt(int status)
+        private string GetStatusStringFromInt(int status)
         {
             string result = "";
             result = status switch

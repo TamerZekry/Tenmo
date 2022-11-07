@@ -1,4 +1,4 @@
-﻿namespace ShredClasses
+﻿namespace shared
 {
     public class TransferAppRej
     {

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using TenmoServer.Models;
+﻿using shared.Models;
+using System.Collections.Generic;
 
 namespace TenmoServer.DAO
 {

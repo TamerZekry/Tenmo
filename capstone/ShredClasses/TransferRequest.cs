@@ -1,12 +1,12 @@
-﻿namespace ShredClasses
+﻿namespace shared
 {
-    public class transfere_request
+    public class TransferRequest
     {
-        public transfere_request()
+        public TransferRequest()
         {
 
         }
-        public transfere_request(int sender_Id, int target_Id, decimal amount, bool isThisASend)
+        public TransferRequest(int sender_Id, int target_Id, decimal amount, bool isThisASend)
         {
             this.sender_Id = sender_Id;
             this.target_Id = target_Id;
