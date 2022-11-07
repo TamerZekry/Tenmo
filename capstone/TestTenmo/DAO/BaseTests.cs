@@ -52,7 +52,7 @@ namespace TestTenmo.DAO
         }
 
         [TestCleanup]  
-        public void Cleanup()
+        public virtual void Cleanup()
         {
             transaction.Dispose();
         }

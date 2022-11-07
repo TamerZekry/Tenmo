@@ -23,7 +23,7 @@ namespace TenmoServer.Controllers
             _userDao = userDao;
         }
 
-        [HttpGet("pending/{transferId}")]
+        [HttpGet("pending/{userId}")]
         public ActionResult<IEnumerable<Transfer>> GetPendingTransfers(int userId)
         {
             if (htua.IsAuthrizedUser(HttpContext, userId))
@@ -52,9 +52,16 @@ namespace TenmoServer.Controllers
             {
                 // hello fellow traveler! wondering why this is here?
                 // If you bypass the client theres no check for sending to your self and it WILL take down the server if called.
-                // If you put in a negitive amount you will also Crash the server atleast theres a check in the DB or you could steal money!!
+                // If you put in a negetive amount you will also Crash the server at least theres a check in the DB or you could steal money!!
                 return Forbid();
             }
+            decimal balance = _userDao.GetUserBalanceById(transfere.sender_Id);
+            if (transfere.IsThisASend &&  balance < transfere._amount)
+            {
+                // A user cannot send more money than they have.
+                return Forbid();
+            }
+
             _transferDao.SendTransfer(transfere.sender_Id, transfere.target_Id, transfere._amount, transfere.IsThisASend);
             return Ok();
         }

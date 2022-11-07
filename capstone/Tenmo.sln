@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.3.32929.385
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32929.386
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TenmoServer", "TenmoServer\TenmoServer.csproj", "{C6335DAA-53B6-47A9-9E96-29600F83FE1A}"
 EndProject
@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TenmoClient", "TenmoClient\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "shared", "ShredClasses\shared.csproj", "{3A97924F-D875-41E8-B248-11907DB7F6D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTenmo", "TestTenmo\TestTenmo.csproj", "{90FF3553-DE36-45F2-A296-98F7AF3E5E72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestTenmo", "TestTenmo\TestTenmo.csproj", "{90FF3553-DE36-45F2-A296-98F7AF3E5E72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

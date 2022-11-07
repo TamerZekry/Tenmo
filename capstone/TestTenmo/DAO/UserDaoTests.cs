@@ -22,7 +22,7 @@ namespace TestTenmo.DAO
         public void GetListOfUsers()  
         {
             var users = dao.GetUsers();
-            Assert.IsNull(users,"Expected List of users Not Null");
+            Assert.IsNotNull(users,"Expected List of users Not Null");
             Assert.AreEqual(4, users.Count);
         }
     }
