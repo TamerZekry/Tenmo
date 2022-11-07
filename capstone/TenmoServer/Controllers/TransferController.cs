@@ -22,16 +22,16 @@ namespace TenmoServer.Controllers
             _userDao = userDao;
         }
 
-        [HttpGet("pending/{userId}")]
-        public ActionResult<IEnumerable<Transfer>> GetPendingTransfers(int userId)
-        {
-            if (this.CurrentUserIdEquals(userId))
-            {
-                return _transferDao.GetPendingTransfers(userId);
-            }
+        //[HttpGet("pending/{userId}")]
+        //public ActionResult<IEnumerable<Transfer>> GetPendingTransfers(int userId)
+        //{
+        //    if (this.CurrentUserIdEquals(userId))
+        //    {
+        //        return _transferDao.GetPendingTransfers(userId);
+        //    }
 
-            //    return Forbid();
-            //}
+        //        return Forbid();
+        //    }
 
             [HttpGet("user/{userId}")]
             public ActionResult<IEnumerable<Transfer>> GetTransfersByUser(int userId)
