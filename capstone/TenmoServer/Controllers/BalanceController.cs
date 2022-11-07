@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using shared;
 using TenmoServer.DAO;
+using TenmoServer.Extentions;
 
 namespace TenmoServer.Controllers
 {
@@ -25,7 +25,7 @@ namespace TenmoServer.Controllers
         [HttpGet("{id}")]
         public ActionResult<decimal> GetUserBalance(int id)
         {
-            if (!htua.IsAuthrizedUser(HttpContext, id))
+            if (!this.CurrentUserIdEquals(id))
             {
                 return Forbid();
             }
@@ -40,7 +40,7 @@ namespace TenmoServer.Controllers
         [HttpGet("account/{id}")]
         public ActionResult<int> GET(int id)
         {
-            if (!htua.IsAuthrizedUser(HttpContext, id))
+            if (!this.CurrentUserIdEquals(id))
             {
                 return Forbid();
             }

@@ -1,5 +1,6 @@
 using RestSharp;
-using ShredClasses;
+using shared;
+using shared.Models;
 using System.Collections.Generic;
 using System.Threading;
 using TenmoClient.Models;
@@ -64,7 +65,7 @@ namespace TenmoClient.Services
         public void TransferPay(int senderId, int targetId, decimal amount, bool isThisSend)
         {
             RestRequest request = new RestRequest($"transfer/SendMoney");
-            request.AddJsonBody(new transfere_request(senderId, targetId, amount, isThisSend));
+            request.AddJsonBody(new TransferRequest(senderId, targetId, amount, isThisSend));
             request.AddHeader("Content-Type", "application/json");
             IRestResponse response = client.Post(request);
         }

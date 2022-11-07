@@ -1,4 +1,5 @@
-﻿using System;
+﻿using shared.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TenmoClient.Helpers;
@@ -283,8 +284,10 @@ namespace TenmoClient
 
         private Dictionary<int, string> CreateAccountToUsernameLookup(List<Transfer> transfers)
         {
-            var userNameLookup = new Dictionary<int, string>();
-            userNameLookup[tenmoApiService.UserAccountId] = tenmoApiService.Username;
+            var userNameLookup = new Dictionary<int, string>
+            {
+                [tenmoApiService.UserAccountId] = tenmoApiService.Username
+            };
 
             foreach (Transfer t in transfers)
             {

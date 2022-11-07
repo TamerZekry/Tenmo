@@ -1,13 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using TenmoServer.DAO;
 
 namespace TestTenmo.DAO
 {
     [TestClass]
-    public class UserDaoTests:BaseDaoTests
+    public class UserDaoTests : BaseDaoTests
     {
         private UserSqlDao dao;
 
@@ -19,10 +16,10 @@ namespace TestTenmo.DAO
         }
 
         [TestMethod]
-        public void GetListOfUsers()  
+        public void GetListOfUsers()
         {
             var users = dao.GetUsers();
-            Assert.IsNotNull(users,"Expected List of users Not Null");
+            Assert.IsNotNull(users, "Expected List of users Not Null");
             Assert.AreEqual(4, users.Count);
         }
     }
