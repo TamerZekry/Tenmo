@@ -47,6 +47,7 @@ namespace TenmoServer
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     NameClaimType = "name"
+
                 };
             });
 

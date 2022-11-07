@@ -1,6 +1,5 @@
 using RestSharp;
 using ShredClasses;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using TenmoClient.Models;
@@ -10,6 +9,7 @@ namespace TenmoClient.Services
     public class TenmoApiService : AuthenticatedApiService
     {
         public readonly string ApiUrl;
+        private readonly TenmoConsoleService console = new TenmoConsoleService();
         public int UserAccountId { get; private set; }
 
         public TenmoApiService(string apiUrl) : base(apiUrl) { }
@@ -18,13 +18,23 @@ namespace TenmoClient.Services
         {
             RestRequest request = new RestRequest($"balance/account/{id}");
             IRestResponse response = client.Get(request);
+            if (!response.IsSuccessful)
+            {
+                console.PrintError(" httpError");
+            }
             return int.Parse(response.Content);
         }
         public decimal GetBalanceById(int id)
         {
             RestRequest request = new RestRequest($"balance/{id}");
             IRestResponse response = client.Get(request);
-            return decimal.Parse(response.Content);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            { return decimal.Parse(response.Content); }
+            else
+            {
+                console.PrintError("http error");
+                return 0;
+            }
         }
 
         public List<Transfer> GetAllTransfersForUser()
@@ -67,7 +77,7 @@ namespace TenmoClient.Services
             IRestResponse<bool> response = client.Post<bool>(request);
             if (!response.Data)
             {
-                Console.WriteLine("You don't have enough money to send");
+                console.PrintError("You don't have enough money to send");
                 Thread.Sleep(2000);
             }
         }
@@ -83,11 +93,11 @@ namespace TenmoClient.Services
         public override ApiUser Login(LoginUser loginUser)
         {
             var apiUser = base.Login(loginUser);
-            if(apiUser != null)
+            if (apiUser != null)
             {
                 UserAccountId = GetAccountIdByUserId(UserId);
             }
-            
+
             return apiUser;
         }
         public override void Logout()
