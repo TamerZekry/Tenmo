@@ -88,7 +88,7 @@ namespace TenmoServer.DAO
             }
             return transferList;
         }
-        
+
         /// <summary>
         ///  Sending or requesting money Transfer
         /// </summary>
