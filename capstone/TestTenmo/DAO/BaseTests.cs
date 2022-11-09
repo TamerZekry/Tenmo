@@ -47,7 +47,7 @@ namespace TestTenmo.DAO
         [TestInitialize]
         public virtual void Setup()
         {
-            transaction = new TransactionScope();
+           transaction = new TransactionScope();
         }
 
         [TestCleanup]

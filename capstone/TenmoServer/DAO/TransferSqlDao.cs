@@ -61,33 +61,7 @@ namespace TenmoServer.DAO
             }
             return transfer;
         }
-        public List<Transfer> GetPendingTransfers(int userId)
-        {
-            List<Transfer> transferList = new List<Transfer>();
 
-            using (SqlConnection transferConnection = new SqlConnection(connectionString))
-            {
-                transferConnection.Open();
-
-                SqlCommand cmd = new SqlCommand(
-                    "SELECT transfer_id, account_from, account_to, transfer_type_desc, transfer_status_desc, amount FROM transfer " +
-                    "JOIN account ON account.user_id = @accountTo " +
-                    "JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id " +
-                    "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id " +
-                    "WHERE transfer.account_to = account.account_id AND transfer.transfer_status_id = 1;");
-
-                cmd.Parameters.AddWithValue("@accountTo", userId);
-                cmd.Connection = transferConnection;
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    Transfer transfer = CreateTransferFromReader(reader);
-                    transferList.Add(transfer);
-                }
-            }
-            return transferList;
-        }
 
         /// <summary>
         ///  Sending or requesting money Transfer
@@ -215,7 +189,7 @@ namespace TenmoServer.DAO
             return true;
         }
 
-        private Transfer CreateTransferFromReader(SqlDataReader reader)
+        public Transfer CreateTransferFromReader(SqlDataReader reader)
         {
             Transfer transfer = new Transfer();
             transfer.Id = Convert.ToInt32(reader["transfer_id"]);
@@ -226,7 +200,7 @@ namespace TenmoServer.DAO
             transfer.Amount = Convert.ToDecimal(reader["amount"]);
             return transfer;
         }
-        private string GetStatusStringFromInt(int status)
+        public string GetStatusStringFromInt(int status)
         {
             string result = "";
             result = status switch
