@@ -71,7 +71,7 @@ VALUES
 
 INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount)
 VALUES
-(2, 2, 2002, 2001, 999),
-(2, 2, 2001, 2002, 999),
+(2, 2, 2002, 2001, 50),
+(2, 2, 2001, 2002, 50),
 (2, 2, 2003, 2001, 50),
 (1, 1, 2002, 2001, 100);

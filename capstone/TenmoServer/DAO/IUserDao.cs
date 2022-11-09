@@ -11,7 +11,6 @@ namespace TenmoServer.DAO
         public decimal GetUserBalanceById(int id);
         public int GetAccountId(int UserId);
         public decimal GetBalanceByAccount(int _account);
-
         public string GetUsernameByAcount(int _account);
     }
 }
